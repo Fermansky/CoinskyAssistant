@@ -1,0 +1,67 @@
+.root {
+    -fx-background-color: #00000000;
+}
+
+.setting-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 8 8 7 7;
+}
+
+.top-bar {
+    -fx-background-color: black;
+    -fx-background-radius: 7 7 0 0;
+}
+
+.log-area {
+    -fx-text-fill: -fx-text-inner-color;
+    -fx-highlight-fill: derive(-fx-control-inner-background,-20%);
+    -fx-highlight-text-fill: -fx-text-inner-color;
+    -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
+    -fx-background-color: linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border),
+    linear-gradient(from 0px 0px to 0px 5px, derive(-fx-control-inner-background, -9%), -fx-control-inner-background);
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 3, 2;
+    -fx-cursor: text;
+    -fx-padding: 0.333333em 0.583em 0.333333em 0.583em; /* 4 7 4 7 */
+}
+
+.log-area:focused {
+    -fx-highlight-fill: -fx-accent;
+    -fx-highlight-text-fill: white;
+    -fx-prompt-text-fill: -fx-control-inner-background;
+}
+
+.log-area > .scroll-pane {
+    -fx-background-color: null;
+}
+.log-area > .scroll-pane > .scroll-bar:horizontal {
+    -fx-background-radius: 0 0 2 2;
+}
+.log-area > .scroll-pane > .scroll-bar:vertical {
+    -fx-background-radius: 0 2 2 0;
+}
+.tlog-area > .scroll-pane > .corner {
+    -fx-background-radius: 0 0 2 0;
+}
+.tlog-area .content {
+    /*the is 1px less top and bottom than TextInput because of scrollpane border */
+    -fx-padding: 0.25em 0.583em 0.25em 0.583em; /* 3 7 3 7 */
+    -fx-cursor: text;
+    -fx-background-color:
+            linear-gradient(from 0px 0px to 0px 4px, derive(-fx-control-inner-background, -8%), -fx-control-inner-background);
+    -fx-background-radius: 2;
+}
+
+.close-btn {
+    -fx-background-color: null;
+    -fx-background-radius: 0 7 0 0;
+}
+
+.close-btn:hover{
+    -fx-background-color: red;
+}
+
+.close-btn Region {
+    -fx-shape: "M542.254545 512L872.727273 181.527273c9.309091-9.309091 9.309091-23.272727 0-32.581818-9.309091-9.309091-23.272727-9.309091-32.581818 0L509.672727 479.418182 181.527273 151.272727c-9.309091-9.309091-23.272727-9.309091-32.581818 0-9.309091 9.309091-9.309091 23.272727 0 32.581818L477.090909 512 148.945455 840.145455c-6.981818 9.309091-6.981818 25.6 2.327272 34.90909 9.309091 9.309091 23.272727 9.309091 32.581818 0L512 546.909091l328.145455 328.145454c9.309091 6.981818 25.6 6.981818 32.581818 0 9.309091-9.309091 9.309091-23.272727 0-32.581818L542.254545 512z";
+    -fx-background-color: white;
+}
