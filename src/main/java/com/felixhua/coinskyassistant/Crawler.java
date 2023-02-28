@@ -1,12 +1,11 @@
-package com.felixhua.tqt;
+package com.felixhua.coinskyassistant;
 
-import com.felixhua.tqt.controller.MainController;
-import com.felixhua.tqt.entity.GoodsItem;
-import com.felixhua.tqt.util.SoundUtil;
+import com.felixhua.coinskyassistant.controller.MainController;
+import com.felixhua.coinskyassistant.entity.GoodsItem;
+import com.felixhua.coinskyassistant.util.SoundUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import javafx.application.Platform;
 import javafx.scene.media.AudioClip;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;

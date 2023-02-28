@@ -1,7 +1,7 @@
-package com.felixhua.tqt.ui;
+package com.felixhua.coinskyassistant.ui;
 
-import com.felixhua.tqt.controller.MainController;
-import com.felixhua.tqt.entity.GoodsItem;
+import com.felixhua.coinskyassistant.controller.MainController;
+import com.felixhua.coinskyassistant.entity.GoodsItem;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

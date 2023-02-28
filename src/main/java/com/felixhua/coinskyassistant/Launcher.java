@@ -1,4 +1,4 @@
-package com.felixhua.tqt;
+package com.felixhua.coinskyassistant;
 
 import javafx.application.Application;
 

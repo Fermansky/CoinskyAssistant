@@ -1,10 +1,10 @@
-package com.felixhua.tqt;
+package com.felixhua.coinskyassistant;
 
-import com.felixhua.tqt.controller.MainController;
-import com.felixhua.tqt.ui.ContentScene;
-import com.felixhua.tqt.ui.MessagePane;
-import com.felixhua.tqt.ui.SettingStage;
-import com.felixhua.tqt.util.SoundUtil;
+import com.felixhua.coinskyassistant.controller.MainController;
+import com.felixhua.coinskyassistant.ui.ContentScene;
+import com.felixhua.coinskyassistant.ui.MessagePane;
+import com.felixhua.coinskyassistant.ui.SettingStage;
+import com.felixhua.coinskyassistant.util.SoundUtil;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;

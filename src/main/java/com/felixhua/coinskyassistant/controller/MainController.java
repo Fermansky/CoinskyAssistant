@@ -1,8 +1,8 @@
-package com.felixhua.tqt.controller;
+package com.felixhua.coinskyassistant.controller;
 
-import com.felixhua.tqt.Crawler;
-import com.felixhua.tqt.ui.MessagePane;
-import com.felixhua.tqt.ui.SettingStage;
+import com.felixhua.coinskyassistant.Crawler;
+import com.felixhua.coinskyassistant.ui.MessagePane;
+import com.felixhua.coinskyassistant.ui.SettingStage;
 
 import java.util.Date;
 

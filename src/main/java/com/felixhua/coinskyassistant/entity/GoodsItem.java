@@ -1,4 +1,4 @@
-package com.felixhua.tqt.entity;
+package com.felixhua.coinskyassistant.entity;
 
 import javafx.scene.image.Image;
 

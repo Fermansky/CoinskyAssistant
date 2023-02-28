@@ -1,4 +1,4 @@
-package com.felixhua.tqt.ui;
+package com.felixhua.coinskyassistant.ui;
 
 import javafx.scene.Cursor;
 import javafx.scene.Parent;

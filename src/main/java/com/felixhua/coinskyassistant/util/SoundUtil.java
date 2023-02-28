@@ -1,4 +1,4 @@
-package com.felixhua.tqt.util;
+package com.felixhua.coinskyassistant.util;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;

@@ -1,6 +1,6 @@
-package com.felixhua.tqt.ui;
+package com.felixhua.coinskyassistant.ui;
 
-import com.felixhua.tqt.controller.MainController;
+import com.felixhua.coinskyassistant.controller.MainController;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

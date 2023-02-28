@@ -1,4 +1,4 @@
-package com.felixhua.tqt.ui;
+package com.felixhua.coinskyassistant.ui;
 
 import javafx.scene.layout.Pane;
 
