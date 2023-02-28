@@ -30,7 +30,7 @@ public class App extends Application {
         primaryStage.getIcons().add(new Image(App.class.getResource("/icon.png").toExternalForm()));
         primaryStage.show();
 
-        SoundUtil.play("greeting.mp3");
+        SoundUtil.play("daily_greeting.mp3");
 
         crawler.start();
     }

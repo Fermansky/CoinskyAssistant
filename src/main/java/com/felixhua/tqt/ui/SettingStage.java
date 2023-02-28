@@ -69,6 +69,7 @@ public class SettingStage extends Stage {
 
         logArea = new TextArea();
         logArea.setPrefSize(220, 200);
+        logArea.setPrefRowCount(10);
         logArea.setEditable(false);
         logArea.setWrapText(true);
         logArea.getStyleClass().removeAll("text-input", "text-area");

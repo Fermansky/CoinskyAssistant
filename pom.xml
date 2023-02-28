@@ -58,6 +58,13 @@
             <artifactId>htmlunit</artifactId>
             <version>2.67.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>0.11.0</version>
+        </dependency>
+
     </dependencies>
 
 

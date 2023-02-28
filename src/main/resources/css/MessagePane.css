@@ -1,3 +1,7 @@
+.delay-label {
+    -fx-font-size: 10;
+}
+
 .close-button {
     -fx-background-color: null;
 }

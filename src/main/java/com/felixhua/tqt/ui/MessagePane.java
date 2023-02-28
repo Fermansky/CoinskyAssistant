@@ -24,6 +24,7 @@ public class MessagePane extends Pane {
     private ImageView imageView;
     private Label nameLabel;
     private Label priceLabel;
+    private Label delayLabel;
     private StackPane closeButton;
     private StackPane settingButton;
 
@@ -49,6 +50,16 @@ public class MessagePane extends Pane {
         priceLabel.setPrefHeight(90);
         priceLabel.setMaxHeight(90);
         priceLabel.relocate(200, 100);
+    }
+
+    private void initDelayLabel() {
+        delayLabel = new Label("0");
+        delayLabel.getStyleClass().add("delay-label");
+        delayLabel.setMaxSize(20, 20);
+        delayLabel.setMinSize(20, 20);
+        delayLabel.setAlignment(Pos.BOTTOM_RIGHT);
+        delayLabel.setTextFill(Color.LAWNGREEN);
+        delayLabel.relocate(370, 170);
     }
 
     private void initCloseButton() {
@@ -112,12 +123,26 @@ public class MessagePane extends Pane {
 
         initNameLabel();
         initPriceLabel();
+        initDelayLabel();
         initCloseButton();
         initSettingButton();
 
-        getChildren().addAll(imageView, nameLabel, priceLabel, closeButton, settingButton);
+        getChildren().addAll(imageView, nameLabel, priceLabel, delayLabel, closeButton, settingButton);
     }
 
+    public void setDelayLabel(int delay) {
+        // delay is in seconds
+        Platform.runLater(() -> {
+            delayLabel.setText(String.valueOf(delay));
+            if (delay <= 5) {
+                delayLabel.setTextFill(Color.LAWNGREEN);
+            } else if (delay < 10) {
+                delayLabel.setTextFill(Color.GOLD);
+            } else {
+                delayLabel.setTextFill(Color.RED);
+            }
+        });
+    }
 
     public void updateItem(GoodsItem item) {
         this.item = item;

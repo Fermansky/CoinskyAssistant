@@ -6,6 +6,7 @@ import com.felixhua.tqt.util.SoundUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import javafx.application.Platform;
 import javafx.scene.media.AudioClip;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Crawler extends Thread {
+    private static final int DEFAULT_SLEEP_TIME = 10000; // 10 seconds
     private static String url = "https://www.yy11.com/shop/show/index/id/2636.html";
     private static String baseUrl = "https://www.yy11.com";
     private static AudioClip newItemSound = new AudioClip(Crawler.class.getResource("/sound/new_item.mp3").toExternalForm());
@@ -36,6 +38,7 @@ public class Crawler extends Thread {
 
             try {
                 while (true) {
+                    long beginTime = System.currentTimeMillis();
                     HtmlPage page = webClient.getPage(url);
                     int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
                     if (jsLeft > 0) {
@@ -56,10 +59,14 @@ public class Crawler extends Thread {
                         mainController.getMessagePane().itemSold();
                         lastItem = latestItem;
                         mainController.log("商品已售出");
+                        SoundUtil.play("item_sold.mp3");
                     } else {
                         mainController.log("无新上架货品");
                     }
-                    Thread.sleep(10000);
+                    int delay = (int) (System.currentTimeMillis() - beginTime);
+                    mainController.getMessagePane().setDelayLabel(delay / 1000);
+                    int sleepTime = Math.max(DEFAULT_SLEEP_TIME - delay, 0);
+                    Thread.sleep(sleepTime);
                 }
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
