@@ -1,5 +1,7 @@
 package com.felixhua.coinskyassistant.entity;
 
+import com.felixhua.coinskyassistant.VoicePrompt;
+import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.scene.image.Image;
 
 public class VoiceAssistant {
@@ -20,6 +22,10 @@ public class VoiceAssistant {
 
     public Image getAvatar() {
         return avatar;
+    }
+
+    public void speak(VoicePrompt voicePrompt) {
+        VoiceUtil.play(this, voicePrompt);
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.felixhua.coinskyassistant.ui;
 
+import com.felixhua.coinskyassistant.VoicePrompt;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
+import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
@@ -31,6 +33,7 @@ public class SettingStage extends Stage {
     private HBox bottomBar; // presents tips
     private ChoiceBox<VoiceAssistant> voiceAssistantChoiceBox;
     private ImageView voiceAssistantView;
+    private Slider volumeSlider;
 
     private TextArea logArea;
 
@@ -58,13 +61,13 @@ public class SettingStage extends Stage {
         closeRegion.setMaxSize(25, 25);
         closeButton.getStyleClass().add("close-btn");
         closeButton.setPrefSize(40, 40);
-        AnchorPane.setRightAnchor(closeButton, 0.0);
-        AnchorPane.setTopAnchor(closeButton, 0.0);
         closeButton.setCenter(closeRegion);
         closeButton.setCursor(Cursor.HAND);
-        closeButton.setOnMousePressed(event -> {
+        closeButton.setOnMouseReleased(event -> {
             this.hide();
         });
+        AnchorPane.setRightAnchor(closeButton, 0.0);
+        AnchorPane.setTopAnchor(closeButton, 0.0);
 
         topBar.getChildren().addAll(iconView, titleLabel, closeButton);
     }
@@ -91,9 +94,12 @@ public class SettingStage extends Stage {
         AnchorPane.setLeftAnchor(soundSettingLabel, 260.0);
         AnchorPane.setTopAnchor(soundSettingLabel, 10.0);
 
-        Slider volumeSlider = new Slider();
-        AnchorPane.setTopAnchor(volumeSlider, 20.0);
-        AnchorPane.setLeftAnchor(volumeSlider, 260.0);
+        volumeSlider = new Slider();
+        volumeSlider.setMax(1.0);
+        volumeSlider.setValue(1.0);
+        volumeSlider.setPrefWidth(130);
+        AnchorPane.setTopAnchor(volumeSlider, 10.0);
+        AnchorPane.setLeftAnchor(volumeSlider, 350.0);
 
         voiceAssistantChoiceBox = new ChoiceBox<>();
         voiceAssistantChoiceBox.setMaxWidth(100);
@@ -101,30 +107,33 @@ public class SettingStage extends Stage {
             @Override
             public void changed(ObservableValue<? extends VoiceAssistant> observable, VoiceAssistant oldValue, VoiceAssistant newValue) {
                 voiceAssistantView.setImage(newValue.getAvatar());
+//                newValue.speak(VoicePrompt.GREETING);
             }
         });
         controller.voiceAssistantProperty.bind(voiceAssistantChoiceBox.valueProperty());
         AnchorPane.setLeftAnchor(voiceAssistantChoiceBox, 260.0);
-        AnchorPane.setTopAnchor(voiceAssistantChoiceBox, 50.0);
+        AnchorPane.setTopAnchor(voiceAssistantChoiceBox, 40.0);
 
         voiceAssistantView = new ImageView();
         voiceAssistantView.setFitHeight(130.0);
         voiceAssistantView.setFitWidth(130.0);
         voiceAssistantView.setEffect(new InnerShadow());
+        voiceAssistantView.setOnMouseClicked(event -> {
+            VoiceUtil.play(VoicePrompt.DAILY_GREETING);
+        });
         AnchorPane.setLeftAnchor(voiceAssistantView, 350.0);
-        AnchorPane.setTopAnchor(voiceAssistantView, 50.0);
+        AnchorPane.setTopAnchor(voiceAssistantView, 40.0);
 
         Button testButton = new Button("test");
         testButton.setOnAction(event -> {
-            System.out.println(outerPane.heightProperty().get() + " " + outerPane.widthProperty().get());
-            System.out.println(settingPane.getHeight() + " " + settingPane.getWidth());
+            logArea.clear();
         });
-        AnchorPane.setLeftAnchor(testButton, 350.0);
-        AnchorPane.setRightAnchor(testButton, 20.0);
+        AnchorPane.setLeftAnchor(testButton, 80.0);
+        AnchorPane.setTopAnchor(testButton, 15.0);
 
         contentPane.getChildren().addAll(logLabel, logArea,
                 soundSettingLabel, voiceAssistantChoiceBox, voiceAssistantView,
-                testButton);
+                volumeSlider, testButton);
     }
 
     private void initSettingPane() {
@@ -181,6 +190,10 @@ public class SettingStage extends Stage {
         if (voiceAssistantChoiceBox.getItems().size() == 1) {
             voiceAssistantChoiceBox.setValue(voiceAssistant);
         }
+    }
+
+    public Slider getVolumeSlider() {
+        return this.volumeSlider;
     }
 
     public SettingStage(MainController controller) {

@@ -2,7 +2,7 @@ package com.felixhua.coinskyassistant;
 
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.GoodsItem;
-import com.felixhua.coinskyassistant.util.SoundUtil;
+import com.felixhua.coinskyassistant.util.VoiceUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -58,7 +58,7 @@ public class Crawler extends Thread {
                         mainController.getMessagePane().itemSold();
                         lastItem = latestItem;
                         mainController.log("商品已售出");
-                        SoundUtil.play("item_sold.mp3");
+                        VoiceUtil.play(VoicePrompt.ITEM_SOLD);
                     } else {
                         mainController.log("无新上架货品");
                     }
@@ -82,16 +82,16 @@ public class Crawler extends Thread {
         if (!mainController.getMessagePane().isReady()) {
             if (date.equals(item.getTime().split(" ")[0])) {
                 if (item.getPrice().endsWith("议价")) {
-                    SoundUtil.play("end_of_day.mp3");
+                    VoiceUtil.play(VoicePrompt.END_OF_DAY);
                 }
-                else SoundUtil.play("started.mp3");
+                else VoiceUtil.play(VoicePrompt.STARTED);
             }
-            else SoundUtil.play("not_started.mp3");
+            else VoiceUtil.play(VoicePrompt.NOT_STARTED);
         } else {
             if (item.getPrice().endsWith("议价")) {
-                SoundUtil.play("end_of_day.mp3");
+                VoiceUtil.play(VoicePrompt.END_OF_DAY);
             }
-            else SoundUtil.play("new_item.mp3");
+            else VoiceUtil.play(VoicePrompt.NEW_ITEM);
         }
         mainController.getMessagePane().updateItem(item);
     }

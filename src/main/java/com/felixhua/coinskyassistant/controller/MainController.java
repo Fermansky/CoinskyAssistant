@@ -13,10 +13,15 @@ import javafx.beans.value.ObservableValue;
 import java.util.Date;
 
 public class MainController {
+    private static MainController mainController = new MainController();
     public MessagePane messagePane;
     public Crawler crawler;
     public SettingStage settingStage;
     public ObjectProperty<VoiceAssistant> voiceAssistantProperty = new SimpleObjectProperty<>();
+
+    public static MainController getInstance() {
+        return mainController;
+    }
 
     public void log(String info) {
         settingStage.appendLog(new Date() + " " + info + "\n");
@@ -44,5 +49,13 @@ public class MainController {
 
     public SettingStage getSettingStage() {
         return settingStage;
+    }
+
+    public VoiceAssistant getVoiceAssistant() {
+        return voiceAssistantProperty.get();
+    }
+
+    private MainController() {
+
     }
 }
