@@ -1,8 +1,14 @@
 package com.felixhua.coinskyassistant.controller;
 
 import com.felixhua.coinskyassistant.Crawler;
+import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import java.util.Date;
 
@@ -10,6 +16,7 @@ public class MainController {
     public MessagePane messagePane;
     public Crawler crawler;
     public SettingStage settingStage;
+    public ObjectProperty<VoiceAssistant> voiceAssistantProperty = new SimpleObjectProperty<>();
 
     public void log(String info) {
         settingStage.appendLog(new Date() + " " + info + "\n");

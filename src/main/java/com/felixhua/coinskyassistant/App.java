@@ -1,6 +1,7 @@
 package com.felixhua.coinskyassistant;
 
 import com.felixhua.coinskyassistant.controller.MainController;
+import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.ui.ContentScene;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
@@ -20,6 +21,10 @@ public class App extends Application {
         ContentScene scene = new ContentScene(new MessagePane(controller), primaryStage);
         Crawler crawler = new Crawler(controller);
         SettingStage settingStage = new SettingStage(controller);
+
+        VoiceAssistant paimon = new VoiceAssistant("派蒙");
+        paimon.setAvatar("paimon");
+        settingStage.addVoiceAssistant(paimon);
 
         scene.setFill(new Color(0, 0, 0, 0.5));
 

@@ -1,12 +1,19 @@
 package com.felixhua.coinskyassistant.ui;
 
 import com.felixhua.coinskyassistant.controller.MainController;
+import com.felixhua.coinskyassistant.entity.VoiceAssistant;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -17,10 +24,13 @@ public class SettingStage extends Stage {
     private double offsetX, offsetY;
     private MainController controller;
     private Scene settingScene;
+    private BorderPane outerPane;
     private BorderPane settingPane;
     private AnchorPane topBar;
     private AnchorPane contentPane;
     private HBox bottomBar; // presents tips
+    private ChoiceBox<VoiceAssistant> voiceAssistantChoiceBox;
+    private ImageView voiceAssistantView;
 
     private TextArea logArea;
 
@@ -74,11 +84,47 @@ public class SettingStage extends Stage {
         logArea.setWrapText(true);
         logArea.getStyleClass().removeAll("text-input", "text-area");
         logArea.getStyleClass().add("log-area");
-//        System.out.println(logArea.getStyleClass());
         AnchorPane.setLeftAnchor(logArea, 10.0);
         AnchorPane.setBottomAnchor(logArea, 20.0);
 
-        contentPane.getChildren().addAll(logLabel, logArea);
+        Label soundSettingLabel = new Label("语音助手:");
+        AnchorPane.setLeftAnchor(soundSettingLabel, 260.0);
+        AnchorPane.setTopAnchor(soundSettingLabel, 10.0);
+
+        Slider volumeSlider = new Slider();
+        AnchorPane.setTopAnchor(volumeSlider, 20.0);
+        AnchorPane.setLeftAnchor(volumeSlider, 260.0);
+
+        voiceAssistantChoiceBox = new ChoiceBox<>();
+        voiceAssistantChoiceBox.setMaxWidth(100);
+        voiceAssistantChoiceBox.valueProperty().addListener(new ChangeListener<VoiceAssistant>() {
+            @Override
+            public void changed(ObservableValue<? extends VoiceAssistant> observable, VoiceAssistant oldValue, VoiceAssistant newValue) {
+                voiceAssistantView.setImage(newValue.getAvatar());
+            }
+        });
+        controller.voiceAssistantProperty.bind(voiceAssistantChoiceBox.valueProperty());
+        AnchorPane.setLeftAnchor(voiceAssistantChoiceBox, 260.0);
+        AnchorPane.setTopAnchor(voiceAssistantChoiceBox, 50.0);
+
+        voiceAssistantView = new ImageView();
+        voiceAssistantView.setFitHeight(130.0);
+        voiceAssistantView.setFitWidth(130.0);
+        voiceAssistantView.setEffect(new InnerShadow());
+        AnchorPane.setLeftAnchor(voiceAssistantView, 350.0);
+        AnchorPane.setTopAnchor(voiceAssistantView, 50.0);
+
+        Button testButton = new Button("test");
+        testButton.setOnAction(event -> {
+            System.out.println(outerPane.heightProperty().get() + " " + outerPane.widthProperty().get());
+            System.out.println(settingPane.getHeight() + " " + settingPane.getWidth());
+        });
+        AnchorPane.setLeftAnchor(testButton, 350.0);
+        AnchorPane.setRightAnchor(testButton, 20.0);
+
+        contentPane.getChildren().addAll(logLabel, logArea,
+                soundSettingLabel, voiceAssistantChoiceBox, voiceAssistantView,
+                testButton);
     }
 
     private void initSettingPane() {
@@ -86,6 +132,7 @@ public class SettingStage extends Stage {
         settingPane.getStylesheets().add(MessagePane.class.getResource("/css/SettingPane.css").toExternalForm());
         settingPane.getStyleClass().add("setting-pane");
         settingPane.setPrefSize(500, 300);
+        settingPane.setMaxSize(500, 300);
 
         initTopBar();
         initContentPane();
@@ -93,11 +140,17 @@ public class SettingStage extends Stage {
 
         settingPane.setTop(topBar);
         settingPane.setCenter(contentPane);
+        settingPane.setEffect(new DropShadow());
     }
 
     private void initSettingScene() {
-        settingScene = new Scene(settingPane);
-        settingScene.setFill(new Color(0, 0, 0, 0));
+        outerPane = new BorderPane();
+        outerPane.setPrefSize(520, 320);
+        outerPane.setMinSize(520, 320);
+        outerPane.setBackground(null);
+        outerPane.setCenter(settingPane);
+        settingScene = new Scene(outerPane);
+        settingScene.setFill(null);
     }
 
     private void setDraggable() {
@@ -121,6 +174,13 @@ public class SettingStage extends Stage {
 
     public void appendLog(String log) {
         logArea.appendText(log);
+    }
+
+    public void addVoiceAssistant(VoiceAssistant voiceAssistant) {
+        voiceAssistantChoiceBox.getItems().add(voiceAssistant);
+        if (voiceAssistantChoiceBox.getItems().size() == 1) {
+            voiceAssistantChoiceBox.setValue(voiceAssistant);
+        }
     }
 
     public SettingStage(MainController controller) {
