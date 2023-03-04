@@ -34,7 +34,6 @@ public class SettingStage extends Stage {
     private ChoiceBox<VoiceAssistant> voiceAssistantChoiceBox;
     private ImageView voiceAssistantView;
     private Slider volumeSlider;
-
     private TextArea logArea;
 
     private void initTopBar() {
@@ -77,12 +76,12 @@ public class SettingStage extends Stage {
         contentPane.setPrefSize(500, 240);
 
         Label logLabel = new Label("日志信息:");
+        logLabel.getStyleClass().add("setting-label");
         AnchorPane.setLeftAnchor(logLabel, 10.0);
         AnchorPane.setTopAnchor(logLabel, 10.0);
 
         logArea = new TextArea();
         logArea.setPrefSize(220, 200);
-        logArea.setPrefRowCount(10);
         logArea.setEditable(false);
         logArea.setWrapText(true);
         logArea.getStyleClass().removeAll("text-input", "text-area");
@@ -91,6 +90,7 @@ public class SettingStage extends Stage {
         AnchorPane.setBottomAnchor(logArea, 20.0);
 
         Label soundSettingLabel = new Label("语音助手:");
+        soundSettingLabel.getStyleClass().add("setting-label");
         AnchorPane.setLeftAnchor(soundSettingLabel, 260.0);
         AnchorPane.setTopAnchor(soundSettingLabel, 10.0);
 
@@ -98,7 +98,7 @@ public class SettingStage extends Stage {
         volumeSlider.setMax(1.0);
         volumeSlider.setValue(1.0);
         volumeSlider.setPrefWidth(130);
-        AnchorPane.setTopAnchor(volumeSlider, 10.0);
+        AnchorPane.setTopAnchor(volumeSlider, 13.0);
         AnchorPane.setLeftAnchor(volumeSlider, 350.0);
 
         voiceAssistantChoiceBox = new ChoiceBox<>();
@@ -107,7 +107,6 @@ public class SettingStage extends Stage {
             @Override
             public void changed(ObservableValue<? extends VoiceAssistant> observable, VoiceAssistant oldValue, VoiceAssistant newValue) {
                 voiceAssistantView.setImage(newValue.getAvatar());
-//                newValue.speak(VoicePrompt.GREETING);
             }
         });
         controller.voiceAssistantProperty.bind(voiceAssistantChoiceBox.valueProperty());

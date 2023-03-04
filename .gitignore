@@ -1,3 +1,8 @@
-# 项目排除路径
+# 锟斤拷目锟脚筹拷路锟斤拷
 /out/
 /target/
+/.idea/
+
+*.html
+*.jar
+*.bat

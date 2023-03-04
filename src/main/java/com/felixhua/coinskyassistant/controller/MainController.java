@@ -4,6 +4,7 @@ import com.felixhua.coinskyassistant.Crawler;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
+import com.felixhua.coinskyassistant.util.LogUtil;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -24,7 +25,8 @@ public class MainController {
     }
 
     public void log(String info) {
-        settingStage.appendLog(new Date() + " " + info + "\n");
+        LogUtil.appendLog(new Date() + " " + info + "\n");
+//        settingStage.appendLog();
     }
 
     public void setCrawler(Crawler crawler) {

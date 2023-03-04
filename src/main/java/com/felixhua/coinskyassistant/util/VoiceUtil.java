@@ -3,9 +3,10 @@ package com.felixhua.coinskyassistant.util;
 import com.felixhua.coinskyassistant.VoicePrompt;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
-import javafx.beans.property.DoubleProperty;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+
+import java.net.URL;
 
 public class VoiceUtil {
     private static MediaPlayer mp;
@@ -14,8 +15,13 @@ public class VoiceUtil {
         if (mp != null && mp.getStatus().equals(MediaPlayer.Status.PLAYING)) {
             mp.dispose();
         }
-        Media media = new Media(VoiceUtil.class.getResource("/voice/" + assistant.getName() + "/"
-                + prompt.getName() + ".mp3").toExternalForm());
+        URL resource = VoiceUtil.class.getResource("/voice/" + assistant.getName() + "/"
+                + prompt.getName() + ".mp3");
+        if (resource == null) {
+            System.err.println("resource not found");
+            return ;
+        }
+        Media media = new Media(resource.toExternalForm());
         mp = new MediaPlayer(media);
         mp.volumeProperty().bind(MainController.getInstance().getSettingStage().getVolumeSlider().valueProperty());
         mp.play();
