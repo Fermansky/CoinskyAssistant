@@ -25,7 +25,7 @@ public class MainController {
     }
 
     public void log(String info) {
-        LogUtil.appendLog(new Date() + " " + info + "\n");
+//        LogUtil.appendLog(new Date() + " " + info + "\n");
 //        settingStage.appendLog();
     }
 

@@ -1,6 +1,7 @@
 # ��Ŀ�ų�·��
 /out/
 /target/
+/log/
 /.idea/
 
 *.html

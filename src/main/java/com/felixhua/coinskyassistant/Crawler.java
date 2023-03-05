@@ -2,6 +2,7 @@ package com.felixhua.coinskyassistant;
 
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.GoodsItem;
+import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
@@ -65,7 +66,7 @@ public class Crawler extends Thread {
                     int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
 //                    int jsLeft = webClient.waitForBackgroundJavaScript(1000);
                     if (jsLeft > 0) {
-                        mainController.log(jsLeft + " tasks remain to be done.");
+                        LogUtil.log(jsLeft + "项JS任务未完成，商品获取失败。");
                         failureTempCount += 1;
                         continue;
                     }
@@ -86,7 +87,7 @@ public class Crawler extends Thread {
     private void processLatestItem(GoodsItem latestItem) {
         if (lastItem == null || !lastItem.getName().equals(latestItem.getName())) {
             updateItem(latestItem);
-            mainController.log("新上架" + latestItem);
+            LogUtil.log("新上架货品" + latestItem);
             lastItem = latestItem;
             if (latestItem.getStatus().equals("已售")) {
                 mainController.getMessagePane().itemSold();
@@ -94,10 +95,10 @@ public class Crawler extends Thread {
         } else if (latestItem.getStatus().equals("已售") && lastItem.getStatus().equals("待售")) {
             mainController.getMessagePane().itemSold();
             lastItem = latestItem;
-            mainController.log("商品已售出");
+            LogUtil.log("商品 " + latestItem.getName() + " 已售出。");
             VoiceUtil.play(VoicePrompt.ITEM_SOLD);
         } else {
-            mainController.log("无新上架货品");
+            LogUtil.log("无新上架商品。");
         }
     }
 
@@ -147,10 +148,10 @@ public class Crawler extends Thread {
     private String getTextByClass(Element element, String className) {
         Elements elements = element.select("." + className);
         if (elements.size() != 1) {
-            mainController.log("Unexpected Elements' Size, expected 1, read " + elements.size());
+            LogUtil.log("预期之外的元素数量，预期值为1，实际读到" + elements.size());
         }
         if (elements.first() == null) {
-            mainController.log("CrawlerUtils.getTextByClass: read null");
+            LogUtil.log("读到null");
             return null;
         }
         return Objects.requireNonNull(elements.first()).text();
