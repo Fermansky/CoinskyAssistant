@@ -1,8 +1,9 @@
 package com.felixhua.coinskyassistant.ui;
 
-import com.felixhua.coinskyassistant.VoicePrompt;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
+import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,7 +35,6 @@ public class SettingStage extends Stage {
     private ChoiceBox<VoiceAssistant> voiceAssistantChoiceBox;
     private ImageView voiceAssistantView;
     private Slider volumeSlider;
-    private TextArea logArea;
 
     private void initTopBar() {
         topBar = new AnchorPane();
@@ -80,14 +80,12 @@ public class SettingStage extends Stage {
         AnchorPane.setLeftAnchor(logLabel, 10.0);
         AnchorPane.setTopAnchor(logLabel, 10.0);
 
-        logArea = new TextArea();
-        logArea.setPrefSize(220, 200);
-        logArea.setEditable(false);
-        logArea.setWrapText(true);
-        logArea.getStyleClass().removeAll("text-input", "text-area");
-        logArea.getStyleClass().add("log-area");
-        AnchorPane.setLeftAnchor(logArea, 10.0);
-        AnchorPane.setBottomAnchor(logArea, 20.0);
+        Button openLogFileButton = new Button("打开日志文件");
+        openLogFileButton.setOnMousePressed(event -> {
+            LogUtil.openLogFile();
+        });
+        AnchorPane.setTopAnchor(openLogFileButton, 10.0);
+        AnchorPane.setRightAnchor(openLogFileButton, 270.0);
 
         Label soundSettingLabel = new Label("语音助手:");
         soundSettingLabel.getStyleClass().add("setting-label");
@@ -123,16 +121,8 @@ public class SettingStage extends Stage {
         AnchorPane.setLeftAnchor(voiceAssistantView, 350.0);
         AnchorPane.setTopAnchor(voiceAssistantView, 40.0);
 
-        Button testButton = new Button("test");
-        testButton.setOnAction(event -> {
-            logArea.clear();
-        });
-        AnchorPane.setLeftAnchor(testButton, 80.0);
-        AnchorPane.setTopAnchor(testButton, 15.0);
-
-        contentPane.getChildren().addAll(logLabel, logArea,
-                soundSettingLabel, voiceAssistantChoiceBox, voiceAssistantView,
-                volumeSlider, testButton);
+        contentPane.getChildren().addAll(logLabel, soundSettingLabel, voiceAssistantChoiceBox,
+                voiceAssistantView, volumeSlider, openLogFileButton);
     }
 
     private void initSettingPane() {
@@ -178,10 +168,6 @@ public class SettingStage extends Stage {
         topBar.setOnMouseReleased(event -> {
             topBar.setCursor(Cursor.DEFAULT);
         });
-    }
-
-    public void appendLog(String log) {
-        logArea.appendText(log);
     }
 
     public void addVoiceAssistant(VoiceAssistant voiceAssistant) {

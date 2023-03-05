@@ -1,6 +1,7 @@
 package com.felixhua.coinskyassistant.util;
 
-import com.felixhua.coinskyassistant.VoicePrompt;
+import com.felixhua.coinskyassistant.enums.LogLevel;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import javafx.scene.media.Media;
@@ -15,10 +16,10 @@ public class VoiceUtil {
         if (mp != null && mp.getStatus().equals(MediaPlayer.Status.PLAYING)) {
             mp.dispose();
         }
-        URL resource = VoiceUtil.class.getResource("/voice/" + assistant.getName() + "/"
-                + prompt.getName() + ".mp3");
+        String path = "/voice/" + assistant.getName() + "/" + prompt.getName() + ".mp3";
+        URL resource = VoiceUtil.class.getResource(path);
         if (resource == null) {
-            System.err.println("resource not found");
+            LogUtil.log(LogLevel.SEVERE, "未找到音频资源 " + path + " 。");
             return ;
         }
         Media media = new Media(resource.toExternalForm());

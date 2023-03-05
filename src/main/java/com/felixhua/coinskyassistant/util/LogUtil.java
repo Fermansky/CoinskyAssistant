@@ -1,5 +1,8 @@
 package com.felixhua.coinskyassistant.util;
 
+import com.felixhua.coinskyassistant.enums.LogLevel;
+
+import java.awt.*;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -22,6 +25,14 @@ public class LogUtil {
         }
     }
 
+    public static void openLogFile() {
+        try {
+            Desktop.getDesktop().open(logFile);
+        } catch (IOException e) {
+            log(LogLevel.SEVERE, e.getMessage());
+        }
+    }
+
     public static void log(LogLevel logLevel, String logMessage) {
         try {
             writer.write("[" + logLevel + "]" + dateFormat.format(new Date()) + "\t");
@@ -38,14 +49,3 @@ public class LogUtil {
     }
 }
 
-enum LogLevel {
-    SEVERE("SEVERE"), WARNING("WARNING"), INFO("INFO");
-
-    private String name;
-    public String getName() {
-        return this.name;
-    }
-    LogLevel(String name) {
-        this.name = name;
-    }
-}

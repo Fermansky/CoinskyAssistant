@@ -2,6 +2,8 @@ package com.felixhua.coinskyassistant;
 
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.GoodsItem;
+import com.felixhua.coinskyassistant.enums.LogLevel;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -15,9 +17,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class Crawler extends Thread {
     private static final int DEFAULT_SLEEP_TIME = 10000; // 10 seconds
@@ -66,7 +65,7 @@ public class Crawler extends Thread {
                     int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
 //                    int jsLeft = webClient.waitForBackgroundJavaScript(1000);
                     if (jsLeft > 0) {
-                        LogUtil.log(jsLeft + "项JS任务未完成，商品获取失败。");
+                        LogUtil.log(LogLevel.WARNING, jsLeft + "项JS任务未完成，商品获取失败。");
                         failureTempCount += 1;
                         continue;
                     }
@@ -87,7 +86,7 @@ public class Crawler extends Thread {
     private void processLatestItem(GoodsItem latestItem) {
         if (lastItem == null || !lastItem.getName().equals(latestItem.getName())) {
             updateItem(latestItem);
-            LogUtil.log("新上架货品" + latestItem);
+            LogUtil.log("新上架货品 " + latestItem + " 。");
             lastItem = latestItem;
             if (latestItem.getStatus().equals("已售")) {
                 mainController.getMessagePane().itemSold();
@@ -148,10 +147,10 @@ public class Crawler extends Thread {
     private String getTextByClass(Element element, String className) {
         Elements elements = element.select("." + className);
         if (elements.size() != 1) {
-            LogUtil.log("预期之外的元素数量，预期值为1，实际读到" + elements.size());
+            LogUtil.log(LogLevel.WARNING, "预期之外的元素数量，预期值为1，实际读到" + elements.size() + " 。");
         }
         if (elements.first() == null) {
-            LogUtil.log("读到null");
+            LogUtil.log(LogLevel.WARNING, "读到null");
             return null;
         }
         return Objects.requireNonNull(elements.first()).text();

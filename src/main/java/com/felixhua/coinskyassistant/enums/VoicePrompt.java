@@ -1,4 +1,4 @@
-package com.felixhua.coinskyassistant;
+package com.felixhua.coinskyassistant.enums;
 
 public enum VoicePrompt {
     DAILY_GREETING("daily_greeting"),

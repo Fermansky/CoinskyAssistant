@@ -2,6 +2,7 @@ package com.felixhua.coinskyassistant;
 
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.ui.ContentScene;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;

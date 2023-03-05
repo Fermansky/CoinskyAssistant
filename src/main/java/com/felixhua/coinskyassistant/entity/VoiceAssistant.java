@@ -1,6 +1,6 @@
 package com.felixhua.coinskyassistant.entity;
 
-import com.felixhua.coinskyassistant.VoicePrompt;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.scene.image.Image;
 
