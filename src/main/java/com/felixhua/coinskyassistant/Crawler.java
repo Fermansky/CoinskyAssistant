@@ -14,13 +14,18 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Crawler extends Thread {
     private static final int DEFAULT_SLEEP_TIME = 10000; // 10 seconds
-    private static String url = "https://www.yy11.com/shop/show/index/id/2636.html";
+    public static String url = "https://www.yy11.com/shop/show/index/id/2636.html";
     private static String baseUrl = "https://www.yy11.com";
     private boolean isCrawling = false;
     private long startTime;
@@ -32,6 +37,14 @@ public class Crawler extends Thread {
 
     @Override
     public void run() {
+        crawl();
+//        crawlWithMultipleThread();
+    }
+
+    /**
+     * Default crawl method. Old, easy and inefficient.
+     */
+    private void crawl() {
         try (WebClient webClient = new WebClient()) {
             WebClientOptions options = webClient.getOptions();
             options.setJavaScriptEnabled(true);
@@ -39,15 +52,13 @@ public class Crawler extends Thread {
             options.setRedirectEnabled(true);
 
             failureTempCount = 0;
-            try {
-                while (true) {
-                    if (!isCrawling) {
-                        startTime = System.currentTimeMillis();
-                    }
-                    isCrawling = true;
+            while (true) {
+                if (!isCrawling) {
+                    startTime = System.currentTimeMillis();
+                }
+                isCrawling = true;
                     HtmlPage page = webClient.getPage(url);
                     int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
-//                    int jsLeft = webClient.waitForBackgroundJavaScript(1000);
                     if (jsLeft > 0) {
                         LogUtil.log(LogLevel.WARNING, jsLeft + "项JS任务未完成，商品获取失败。");
                         failureTempCount += 1;
@@ -56,6 +67,9 @@ public class Crawler extends Thread {
                     }
                     failureTempCount = 0;
                     GoodsItem latestItem = getLatestItem(page.asXml());
+                    if (latestItem == null) {
+                        continue;
+                    }
                     processLatestItem(latestItem);
                     int delay = (int) (System.currentTimeMillis() - startTime);
                     if (averageCrawlTime == 0) {
@@ -66,11 +80,51 @@ public class Crawler extends Thread {
                     mainController.getMessagePane().setDelayLabel(delay / 1000);
                     int sleepTime = Math.max(DEFAULT_SLEEP_TIME - delay, 0);
                     Thread.sleep(sleepTime);
-                    isCrawling = false;
-                }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+                isCrawling = false;
             }
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Experimental. Will cause a lot of error, but it
+     * should work anyway. However, this should be the
+     * direction of developing.
+     */
+    private void crawlWithMultipleThread() {
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        ArrayList<CrawlerThread> tasks = new ArrayList<>();
+        tasks.add(new CrawlerThread(this));
+        tasks.add(new CrawlerThread(this));
+        tasks.add(new CrawlerThread(this));
+        while (true) {
+            try {
+                if (!isCrawling) {
+                    startTime = System.currentTimeMillis();
+                }
+                isCrawling = true;
+                String s = executorService.invokeAny(tasks);
+                if (s.equals("n")) {
+                    LogUtil.log(LogLevel.WARNING,"商品获取失败。");
+                    failureCount += 1;
+                    continue;
+                }
+                GoodsItem latestItem = getLatestItem(s);
+                processLatestItem(latestItem);
+                int delay = (int) (System.currentTimeMillis() - startTime);
+                if (averageCrawlTime == 0) {
+                    averageCrawlTime = delay;
+                } else {
+                    averageCrawlTime = (averageCrawlTime + delay) / 2;
+                }
+                mainController.getMessagePane().setDelayLabel(delay / 1000);
+                isCrawling = false;
+                Thread.sleep(10000);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 
@@ -116,6 +170,11 @@ public class Crawler extends Thread {
     }
 
     private GoodsItem getLatestItem(String html) {
+        if (Jsoup.parse(html).head().select("title").text().equals("当前操作错误提示")) {
+            LogUtil.log("访问速度过快，访问被拒绝。");
+            return null;
+        }
+
         GoodsItem goodsItem = new GoodsItem();
         try {
             Element first = Jsoup.parse(html).body().select(".goodsitem").get(0);
