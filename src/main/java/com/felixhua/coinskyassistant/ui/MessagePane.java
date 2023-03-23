@@ -73,7 +73,7 @@ public class MessagePane extends Pane {
         closeButton.setCursor(Cursor.HAND);
         closeButton.setOnMousePressed(event -> {
             Platform.exit();
-            System.exit(0);
+//            System.exit(0);
         });
     }
 

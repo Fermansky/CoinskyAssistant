@@ -22,7 +22,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-
 public class SettingStage extends Stage {
     private double offsetX, offsetY;
     private MainController controller;

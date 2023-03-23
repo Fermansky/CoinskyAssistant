@@ -6,21 +6,31 @@ import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.ui.ContentScene;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
+import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.extern.java.Log;
 
 public class App extends Application {
+    private long launchTime;
+    private long stopTime;
+    private Crawler crawler;
     private MainController controller;
+
+    @Override
+    public void init() throws Exception {
+        launchTime = System.currentTimeMillis();
+    }
 
     @Override
     public void start(Stage primaryStage) {
         controller = MainController.getInstance();
         ContentScene scene = new ContentScene(new MessagePane(controller), primaryStage);
-        Crawler crawler = new Crawler(controller);
+        crawler = new Crawler(controller);
         SettingStage settingStage = new SettingStage(controller);
 
         VoiceAssistant paimon = new VoiceAssistant("paimon");
@@ -41,4 +51,20 @@ public class App extends Application {
         crawler.start();
     }
 
+    @Override
+    public void stop() throws Exception {
+        stopTime = System.currentTimeMillis();
+        long runningTime = stopTime - launchTime;
+        System.out.println("程序运行结束，耗时" + runningTime + "毫秒。");
+        System.out.println("平均每次爬取耗时" + crawler.averageCrawlTime + "毫秒。");
+        System.out.println("共计爬取失败" + crawler.failureCount + "次。");
+        LogUtil.log("程序运行结束，耗时" + runningTime + "毫秒。");
+        LogUtil.log("平均每次爬取耗时" + crawler.averageCrawlTime + "毫秒。");
+        LogUtil.log("共计爬取失败" + crawler.failureCount + "次。");
+        System.exit(0);
+    }
+
+    public long getCurrentRunningTimeMillis() {
+        return System.currentTimeMillis() - launchTime;
+    }
 }

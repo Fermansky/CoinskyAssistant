@@ -22,9 +22,13 @@ public class Crawler extends Thread {
     private static final int DEFAULT_SLEEP_TIME = 10000; // 10 seconds
     private static String url = "https://www.yy11.com/shop/show/index/id/2636.html";
     private static String baseUrl = "https://www.yy11.com";
+    private boolean isCrawling = false;
+    private long startTime;
+    public int averageCrawlTime = 0;
     private MainController mainController;
     private GoodsItem lastItem;
     private int failureTempCount = 0;
+    public int failureCount = 0;
 
     @Override
     public void run() {
@@ -35,47 +39,34 @@ public class Crawler extends Thread {
             options.setRedirectEnabled(true);
 
             failureTempCount = 0;
-//            ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
-//            service.scheduleWithFixedDelay(() -> {
-//                long beginTime = System.currentTimeMillis();
-//                HtmlPage page = null;
-//                try {
-//                    page = webClient.getPage(url);
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
-//
-//                int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
-//                if (jsLeft > 0) {
-//                    mainController.log(jsLeft + " tasks remain to be done.");
-//                    failureTempCount += 1;
-//                    return ;
-//                }
-//                failureTempCount = 0;
-//                GoodsItem latestItem = getLatestItem(page.asXml());
-//                processLatestItem(latestItem);
-//                int delay = (int) (System.currentTimeMillis() - beginTime);
-//                System.out.println("EOT");
-////                mainController.getMessagePane().setDelayLabel(delay / 1000);
-//            }, 1, 10, TimeUnit.SECONDS);
             try {
                 while (true) {
-                    long beginTime = System.currentTimeMillis();
+                    if (!isCrawling) {
+                        startTime = System.currentTimeMillis();
+                    }
+                    isCrawling = true;
                     HtmlPage page = webClient.getPage(url);
                     int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
 //                    int jsLeft = webClient.waitForBackgroundJavaScript(1000);
                     if (jsLeft > 0) {
                         LogUtil.log(LogLevel.WARNING, jsLeft + "项JS任务未完成，商品获取失败。");
                         failureTempCount += 1;
+                        failureCount += 1;
                         continue;
                     }
                     failureTempCount = 0;
                     GoodsItem latestItem = getLatestItem(page.asXml());
                     processLatestItem(latestItem);
-                    int delay = (int) (System.currentTimeMillis() - beginTime);
+                    int delay = (int) (System.currentTimeMillis() - startTime);
+                    if (averageCrawlTime == 0) {
+                        averageCrawlTime = delay;
+                    } else {
+                        averageCrawlTime = (averageCrawlTime + delay) / 2;
+                    }
                     mainController.getMessagePane().setDelayLabel(delay / 1000);
                     int sleepTime = Math.max(DEFAULT_SLEEP_TIME - delay, 0);
                     Thread.sleep(sleepTime);
+                    isCrawling = false;
                 }
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
