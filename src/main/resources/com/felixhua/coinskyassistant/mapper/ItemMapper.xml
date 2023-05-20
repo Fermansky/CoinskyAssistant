@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.felixhua.coinskyassistant.mapper.ItemMapper">
+    <select id="selectAllItems" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
+        select * from item
+    </select>
+    <select id="checkItem">
+        select count(*) from item where url = #{url}
+    </select>
+    <insert id="insertItem">
+        INSERT INTO item ( name, description, price, url, create_time )
+        VALUES ( #{name}, #{description}, #{price}, #{url}, #{createTime} )
+    </insert>
+</mapper>

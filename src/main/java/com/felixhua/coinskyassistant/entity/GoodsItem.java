@@ -1,7 +1,9 @@
 package com.felixhua.coinskyassistant.entity;
 
 import javafx.scene.image.Image;
+import lombok.Data;
 
+@Data
 public class GoodsItem {
     private String imgUrl;
     private String price;
@@ -71,8 +73,14 @@ public class GoodsItem {
         return views;
     }
 
-    @Override
-    public String toString() {
-        return name;
+    public ItemPO convertToItemPO() {
+        ItemPO itemPO = new ItemPO();
+        itemPO.setName(this.name);
+        String parsePrice = price.substring(1);
+        parsePrice = parsePrice.split("\\.")[0];
+        itemPO.setPrice(Integer.parseInt(parsePrice));
+        itemPO.setUrl(this.itemUrl);
+        return itemPO;
     }
+
 }

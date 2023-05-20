@@ -7,3 +7,7 @@
 *.html
 *.jar
 *.bat
+
+*.log
+*.log.*
+*.zip

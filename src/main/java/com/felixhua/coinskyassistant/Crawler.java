@@ -2,6 +2,7 @@ package com.felixhua.coinskyassistant;
 
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.GoodsItem;
+import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.enums.LogLevel;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.util.LogUtil;
@@ -26,11 +27,11 @@ import java.util.concurrent.Executors;
 public class Crawler extends Thread {
     private static final int DEFAULT_SLEEP_TIME = 10000; // 10 seconds
     public static String url = "https://www.yy11.com/shop/show/index/id/2636.html";
-    private static String baseUrl = "https://www.yy11.com";
+    private static final String baseUrl = "https://www.yy11.com";
     private boolean isCrawling = false;
     private long startTime;
     public int averageCrawlTime = 0;
-    private MainController mainController;
+    private final MainController mainController;
     private GoodsItem lastItem;
     private int failureTempCount = 0;
     public int failureCount = 0;
@@ -71,6 +72,12 @@ public class Crawler extends Thread {
                         continue;
                     }
                     processLatestItem(latestItem);
+                    if(latestItem.getPrice().endsWith("0")){
+                        if(mainController.getItemMapper().checkItem(latestItem.getItemUrl()) == 0) {
+                            ItemPO itemPO = lastItem.convertToItemPO();
+                            mainController.getItemMapper().insertItem(itemPO);
+                        }
+                    }
                     int delay = (int) (System.currentTimeMillis() - startTime);
                     if (averageCrawlTime == 0) {
                         averageCrawlTime = delay;
@@ -83,7 +90,7 @@ public class Crawler extends Thread {
                 isCrawling = false;
             }
         } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
