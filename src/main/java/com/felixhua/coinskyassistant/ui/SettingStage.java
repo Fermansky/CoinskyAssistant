@@ -5,6 +5,7 @@ import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
@@ -31,6 +32,7 @@ public class SettingStage extends Stage {
     private AnchorPane topBar;
     private AnchorPane contentPane;
     private HBox bottomBar; // presents tips
+    private Label bottomInfo;
     private ChoiceBox<VoiceAssistant> voiceAssistantChoiceBox;
     private ImageView voiceAssistantView;
     private Slider volumeSlider;
@@ -70,6 +72,16 @@ public class SettingStage extends Stage {
         topBar.getChildren().addAll(iconView, titleLabel, closeButton);
     }
 
+    private void initBottomBar() {
+        bottomBar = new HBox();
+        bottomBar.setPrefHeight(20);
+        bottomBar.getStyleClass().add("bottom-bar");
+
+        bottomInfo = new Label("准备就绪");
+//        bottomInfo.getStyleClass().add("bottom-info")
+        bottomBar.getChildren().add(bottomInfo);
+    }
+
     private void initContentPane() {
         contentPane = new AnchorPane();
         contentPane.setPrefSize(500, 240);
@@ -88,6 +100,7 @@ public class SettingStage extends Stage {
 
         Button updateInfoButton = new Button("更新数据库");
         updateInfoButton.setOnMousePressed(event -> {
+            this.bottomInfo.setText("更新数据库中……");
             controller.getCrawler().updateItemsInfo();
         });
         AnchorPane.setTopAnchor(updateInfoButton, 40.0);
@@ -140,10 +153,11 @@ public class SettingStage extends Stage {
 
         initTopBar();
         initContentPane();
-        bottomBar = new HBox();
+        initBottomBar();
 
         settingPane.setTop(topBar);
         settingPane.setCenter(contentPane);
+        settingPane.setBottom(bottomBar);
         settingPane.setEffect(new DropShadow());
     }
 
@@ -185,6 +199,16 @@ public class SettingStage extends Stage {
 
     public Slider getVolumeSlider() {
         return this.volumeSlider;
+    }
+
+    /**
+     * Show info on the bottom bar.
+     * @param info
+     */
+    public void showInfo(String info) {
+        Platform.runLater(() -> {
+            bottomInfo.setText(info);
+        });
     }
 
     public SettingStage(MainController controller) {

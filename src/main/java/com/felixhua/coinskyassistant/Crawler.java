@@ -5,21 +5,20 @@ import com.felixhua.coinskyassistant.entity.GoodsItem;
 import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.enums.LogLevel;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
+import com.felixhua.coinskyassistant.util.ConstantUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
-import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
-import com.gargoylesoftware.htmlunit.html.Html;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.devtools.v85.domstorage.model.Item;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -81,6 +80,7 @@ public class Crawler extends Thread {
                     if(mainController.getItemMapper().checkItem(latestItem.getItemUrl()) == 0) {
                         ItemPO itemPO = lastItem.convertToItemPO();
                         mainController.getItemMapper().insertItem(itemPO);
+                        LogUtil.log(lastItem.getName() + " 已被加入数据库");
                     }
                 }
                 int delay = (int) (System.currentTimeMillis() - startTime);
@@ -141,9 +141,10 @@ public class Crawler extends Thread {
     }
 
     public void updateItemsInfo() {
-        List<ItemPO> unprocessedItems = mainController.getItemMapper().selectUnprocessedItems();
-        System.out.println(unprocessedItems);
-
+        long start = System.currentTimeMillis();
+//        List<ItemPO> unprocessedItems = mainController.getItemMapper().selectItemsWithoutDescription();
+        List<ItemPO> unprocessedItems = mainController.getItemMapper().selectItemsWithoutImg();
+//        mainController.showInfo("更新数据库中 待更新条目：" + unprocessedItems.size());
         try(WebClient webClient = new WebClient()) {
             WebClientOptions options = webClient.getOptions();
             options.setJavaScriptEnabled(true);
@@ -151,6 +152,8 @@ public class Crawler extends Thread {
             options.setRedirectEnabled(true);
 
             for(ItemPO itemPO : unprocessedItems){
+                System.out.println("更新数据库中：" + unprocessedItems.indexOf(itemPO)+1 + "/" + unprocessedItems.size());
+                long tempStart = System.currentTimeMillis();
                 HtmlPage page = webClient.getPage(itemPO.getUrl());
                 webClient.waitForBackgroundJavaScript(10000);
                 Document parse = Jsoup.parse(page.asXml());
@@ -160,7 +163,6 @@ public class Crawler extends Thread {
                 String price = parse.getElementsByClass("quotePrice").get(0).text();
                 price = price.substring(2);
                 price = price.split("\\.")[0];
-
                 String intro = parse.getElementById("intro").text().substring(6);
                 int lastSpaceIndex = intro.lastIndexOf(" ");
                 intro = intro.substring(0, lastSpaceIndex);
@@ -168,17 +170,39 @@ public class Crawler extends Thread {
                 lastSpaceIndex = goodsTime.lastIndexOf(" ");
                 goodsTime = goodsTime.substring(0, lastSpaceIndex);
 
+                String img = parse.getElementById("imgsShower").children().get(0).attr("src");
+                downloadImage(img);
+
                 itemPO.setDescription(intro);
                 itemPO.setCreateTime(goodsTime);
                 itemPO.setName(name);
                 itemPO.setPrice(Integer.parseInt(price));
-                System.out.println(itemPO);
-
+                itemPO.setImgUrl(img);
                 mainController.getItemMapper().updateItem(itemPO);
+
+                if(System.currentTimeMillis() - tempStart <= 3000) {
+                    Thread.sleep(2000);
+                }
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+        long end = System.currentTimeMillis();
+        mainController.showInfo("更新数据库完成，共更新" + unprocessedItems.size() + "条记录，耗时" + ((end - start)/1000) + "秒。");
+    }
+
+    private void downloadImage(String imageUrl) throws IOException {
+        URL url = new URL(imageUrl);
+        InputStream in = url.openStream();
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(ConstantUtil.LOCAL_IMAGE_STORAGE +
+                imageUrl.substring(imageUrl.lastIndexOf('/') + 1)));
+
+        for (int b; (b = in.read()) != -1;) {
+            out.write(b);
+        }
+
+        out.close();
+        in.close();
     }
 
     private void processLatestItem(GoodsItem latestItem) {

@@ -33,6 +33,10 @@ public class MainController {
 //        settingStage.appendLog();
     }
 
+    public void showInfo(String info) {
+        settingStage.showInfo(info);
+    }
+
     public void setCrawler(Crawler crawler) {
         this.crawler = crawler;
     }
