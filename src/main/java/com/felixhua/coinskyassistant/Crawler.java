@@ -7,18 +7,23 @@ import com.felixhua.coinskyassistant.enums.LogLevel;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
+import com.gargoylesoftware.htmlunit.html.Html;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.devtools.v85.domstorage.model.Item;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -58,35 +63,35 @@ public class Crawler extends Thread {
                     startTime = System.currentTimeMillis();
                 }
                 isCrawling = true;
-                    HtmlPage page = webClient.getPage(url);
-                    int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
-                    if (jsLeft > 0) {
-                        LogUtil.log(LogLevel.WARNING, jsLeft + "项JS任务未完成，商品获取失败。");
-                        failureTempCount += 1;
-                        failureCount += 1;
-                        continue;
+                HtmlPage page = webClient.getPage(url);
+                int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
+                if (jsLeft > 0) {
+                    LogUtil.log(LogLevel.WARNING, jsLeft + "项JS任务未完成，商品获取失败。");
+                    failureTempCount += 1;
+                    failureCount += 1;
+                    continue;
+                }
+                failureTempCount = 0;
+                GoodsItem latestItem = getLatestItem(page.asXml());
+                if (latestItem == null) {
+                    continue;
+                }
+                processLatestItem(latestItem);
+                if(latestItem.getPrice().endsWith("0")){
+                    if(mainController.getItemMapper().checkItem(latestItem.getItemUrl()) == 0) {
+                        ItemPO itemPO = lastItem.convertToItemPO();
+                        mainController.getItemMapper().insertItem(itemPO);
                     }
-                    failureTempCount = 0;
-                    GoodsItem latestItem = getLatestItem(page.asXml());
-                    if (latestItem == null) {
-                        continue;
-                    }
-                    processLatestItem(latestItem);
-                    if(latestItem.getPrice().endsWith("0")){
-                        if(mainController.getItemMapper().checkItem(latestItem.getItemUrl()) == 0) {
-                            ItemPO itemPO = lastItem.convertToItemPO();
-                            mainController.getItemMapper().insertItem(itemPO);
-                        }
-                    }
-                    int delay = (int) (System.currentTimeMillis() - startTime);
-                    if (averageCrawlTime == 0) {
-                        averageCrawlTime = delay;
-                    } else {
-                        averageCrawlTime = (averageCrawlTime + delay) / 2;
-                    }
-                    mainController.getMessagePane().setDelayLabel(delay / 1000);
-                    int sleepTime = Math.max(DEFAULT_SLEEP_TIME - delay, 0);
-                    Thread.sleep(sleepTime);
+                }
+                int delay = (int) (System.currentTimeMillis() - startTime);
+                if (averageCrawlTime == 0) {
+                    averageCrawlTime = delay;
+                } else {
+                    averageCrawlTime = (averageCrawlTime + delay) / 2;
+                }
+                mainController.getMessagePane().setDelayLabel(delay / 1000);
+                int sleepTime = Math.max(DEFAULT_SLEEP_TIME - delay, 0);
+                Thread.sleep(sleepTime);
                 isCrawling = false;
             }
         } catch (InterruptedException | IOException e) {
@@ -132,6 +137,47 @@ public class Crawler extends Thread {
                 throw new RuntimeException(e);
             }
 
+        }
+    }
+
+    public void updateItemsInfo() {
+        List<ItemPO> unprocessedItems = mainController.getItemMapper().selectUnprocessedItems();
+        System.out.println(unprocessedItems);
+
+        try(WebClient webClient = new WebClient()) {
+            WebClientOptions options = webClient.getOptions();
+            options.setJavaScriptEnabled(true);
+            options.setCssEnabled(false);
+            options.setRedirectEnabled(true);
+
+            for(ItemPO itemPO : unprocessedItems){
+                HtmlPage page = webClient.getPage(itemPO.getUrl());
+                webClient.waitForBackgroundJavaScript(10000);
+                Document parse = Jsoup.parse(page.asXml());
+
+                String name = parse.getElementsByClass("goodsTitle").get(0).text();
+                name = name.substring(name.indexOf("]") + 1);
+                String price = parse.getElementsByClass("quotePrice").get(0).text();
+                price = price.substring(2);
+                price = price.split("\\.")[0];
+
+                String intro = parse.getElementById("intro").text().substring(6);
+                int lastSpaceIndex = intro.lastIndexOf(" ");
+                intro = intro.substring(0, lastSpaceIndex);
+                String goodsTime = parse.getElementsByClass("goodsTime").get(0).text().substring(6);
+                lastSpaceIndex = goodsTime.lastIndexOf(" ");
+                goodsTime = goodsTime.substring(0, lastSpaceIndex);
+
+                itemPO.setDescription(intro);
+                itemPO.setCreateTime(goodsTime);
+                itemPO.setName(name);
+                itemPO.setPrice(Integer.parseInt(price));
+                System.out.println(itemPO);
+
+                mainController.getItemMapper().updateItem(itemPO);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

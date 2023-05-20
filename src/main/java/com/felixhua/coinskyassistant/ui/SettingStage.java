@@ -86,6 +86,13 @@ public class SettingStage extends Stage {
         AnchorPane.setTopAnchor(openLogFileButton, 10.0);
         AnchorPane.setRightAnchor(openLogFileButton, 270.0);
 
+        Button updateInfoButton = new Button("更新数据库");
+        updateInfoButton.setOnMousePressed(event -> {
+            controller.getCrawler().updateItemsInfo();
+        });
+        AnchorPane.setTopAnchor(updateInfoButton, 40.0);
+        AnchorPane.setRightAnchor(updateInfoButton, 270.0);
+
         Label soundSettingLabel = new Label("语音助手:");
         soundSettingLabel.getStyleClass().add("setting-label");
         AnchorPane.setLeftAnchor(soundSettingLabel, 260.0);
@@ -121,7 +128,7 @@ public class SettingStage extends Stage {
         AnchorPane.setTopAnchor(voiceAssistantView, 40.0);
 
         contentPane.getChildren().addAll(logLabel, soundSettingLabel, voiceAssistantChoiceBox,
-                voiceAssistantView, volumeSlider, openLogFileButton);
+                voiceAssistantView, volumeSlider, openLogFileButton, updateInfoButton);
     }
 
     private void initSettingPane() {
