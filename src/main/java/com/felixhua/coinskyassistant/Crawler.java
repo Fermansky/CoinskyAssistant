@@ -191,18 +191,24 @@ public class Crawler extends Thread {
         mainController.showInfo("更新数据库完成，共更新" + unprocessedItems.size() + "条记录，耗时" + ((end - start)/1000) + "秒。");
     }
 
-    private void downloadImage(String imageUrl) throws IOException {
-        URL url = new URL(imageUrl);
-        InputStream in = url.openStream();
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(ConstantUtil.LOCAL_IMAGE_STORAGE +
-                imageUrl.substring(imageUrl.lastIndexOf('/') + 1)));
+    public void downloadImage(String imageUrl) throws IOException {
+        String fileName = ConstantUtil.LOCAL_IMAGE_STORAGE + imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+        File outputFile = new File(fileName);
 
-        for (int b; (b = in.read()) != -1;) {
-            out.write(b);
+        if (outputFile.exists()) {
+            return;
         }
 
-        out.close();
-        in.close();
+        URL url = new URL(imageUrl);
+        try (InputStream in = url.openStream();
+             OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile))) {
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+        }
     }
 
     private void processLatestItem(GoodsItem latestItem) {

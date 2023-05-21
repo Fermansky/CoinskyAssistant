@@ -25,9 +25,8 @@ import javafx.stage.StageStyle;
 
 public class SettingStage extends Stage {
     private double offsetX, offsetY;
-    private MainController controller;
+    private final MainController controller;
     private Scene settingScene;
-    private BorderPane outerPane;
     private BorderPane settingPane;
     private AnchorPane topBar;
     private AnchorPane contentPane;
@@ -78,7 +77,6 @@ public class SettingStage extends Stage {
         bottomBar.getStyleClass().add("bottom-bar");
 
         bottomInfo = new Label("准备就绪");
-//        bottomInfo.getStyleClass().add("bottom-info")
         bottomBar.getChildren().add(bottomInfo);
     }
 
@@ -100,8 +98,8 @@ public class SettingStage extends Stage {
 
         Button updateInfoButton = new Button("更新数据库");
         updateInfoButton.setOnMousePressed(event -> {
-            this.bottomInfo.setText("更新数据库中……");
-            controller.getCrawler().updateItemsInfo();
+//            bottomInfo.textProperty().bind(controller.getUpdateServiceMessageProperty());
+            controller.updateInfo();
         });
         AnchorPane.setTopAnchor(updateInfoButton, 40.0);
         AnchorPane.setRightAnchor(updateInfoButton, 270.0);
@@ -162,7 +160,7 @@ public class SettingStage extends Stage {
     }
 
     private void initSettingScene() {
-        outerPane = new BorderPane();
+        BorderPane outerPane = new BorderPane();
         outerPane.setPrefSize(520, 320);
         outerPane.setMinSize(520, 320);
         outerPane.setBackground(null);
@@ -203,12 +201,15 @@ public class SettingStage extends Stage {
 
     /**
      * Show info on the bottom bar.
-     * @param info
      */
     public void showInfo(String info) {
         Platform.runLater(() -> {
             bottomInfo.setText(info);
         });
+    }
+
+    public Label getBottomInfo() {
+        return bottomInfo;
     }
 
     public SettingStage(MainController controller) {
