@@ -7,6 +7,8 @@ import com.felixhua.coinskyassistant.mapper.ItemMapper;
 import com.felixhua.coinskyassistant.service.UpdateService;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
+import com.felixhua.coinskyassistant.util.ConstantUtil;
+import com.felixhua.coinskyassistant.util.DownloadUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
@@ -25,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 public class MainController {
-    private static MainController mainController = new MainController();
+    private static final MainController mainController = new MainController();
     public MessagePane messagePane;
     public Crawler crawler;
     public SettingStage settingStage;
@@ -43,7 +45,7 @@ public class MainController {
 //        settingStage.appendLog();
     }
     public void updateInfo() {
-        List<ItemPO> unprocessedItems = getItemMapper().selectItemsWithoutImg();
+        List<ItemPO> unprocessedItems = getItemMapper().selectItemsWithIncompleteProperties();
         updateService.setItemPOList(unprocessedItems);
         if(updateService.getState().equals(Worker.State.READY)) {
             updateService.start();
@@ -111,7 +113,9 @@ public class MainController {
             List<ItemPO> itemPOS = updateService.getValue();
             for(ItemPO itemPO : itemPOS) {
                 try {
-                    crawler.downloadImage(itemPO.getImgUrl());
+                    String imageUrl = itemPO.getImgUrl();
+                    String fileName = ConstantUtil.LOCAL_IMAGE_STORAGE + imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+                    DownloadUtil.download(imageUrl, fileName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

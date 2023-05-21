@@ -12,6 +12,9 @@
     <select id="selectItemsWithoutImg" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
         select * from item where img is null
     </select>
+    <select id="selectItemsWithIncompleteProperties" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
+        select * from item where name is null or description is null or price is null or create_time is null or img is null
+    </select>
     <select id="checkItem">
         select count(*) from item where url = #{url}
     </select>

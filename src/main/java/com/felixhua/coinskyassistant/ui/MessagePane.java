@@ -19,8 +19,8 @@ import java.net.URISyntaxException;
 
 public class MessagePane extends Pane {
     private boolean ready = false;
+    private final MainController controller;
     private GoodsItem item;
-    private MainController controller;
     private ImageView imageView;
     private Label nameLabel;
     private Label priceLabel;

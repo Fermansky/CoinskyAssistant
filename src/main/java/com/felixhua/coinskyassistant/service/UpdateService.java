@@ -11,7 +11,11 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * This Service receives a list of ItemPO (url is required), and returns them with full information
+ */
 public class UpdateService extends Service<List<ItemPO>> {
     private List<ItemPO> itemPOList;
 
@@ -23,7 +27,7 @@ public class UpdateService extends Service<List<ItemPO>> {
     protected Task<List<ItemPO>> createTask() {
         return new Task<>() {
             @Override
-            protected List<ItemPO> call() throws Exception {
+            protected List<ItemPO> call() {
                 try (WebClient webClient = new WebClient()) {
                     WebClientOptions options = webClient.getOptions();
                     options.setJavaScriptEnabled(true);
@@ -31,30 +35,32 @@ public class UpdateService extends Service<List<ItemPO>> {
                     options.setRedirectEnabled(true);
 
                     for (ItemPO itemPO : itemPOList) {
-                        updateMessage("更新数据库中：" + (itemPOList.indexOf(itemPO) + 1) + "/" + itemPOList.size());
                         long tempStart = System.currentTimeMillis();
+                        updateMessage("获取数据中：" + (itemPOList.indexOf(itemPO) + 1) + "/" + itemPOList.size());
                         HtmlPage page = webClient.getPage(itemPO.getUrl());
                         webClient.waitForBackgroundJavaScript(10000);
                         Document parse = Jsoup.parse(page.asXml());
 
                         String name = parse.getElementsByClass("goodsTitle").get(0).text();
                         name = name.substring(name.indexOf("]") + 1);
+                        itemPO.setName(name);
+
                         String price = parse.getElementsByClass("quotePrice").get(0).text();
                         price = price.substring(2);
                         price = price.split("\\.")[0];
-                        String intro = parse.getElementById("intro").text().substring(6);
+                        itemPO.setPrice(Integer.parseInt(price));
+
+                        String intro = Objects.requireNonNull(parse.getElementById("intro")).text().substring(6);
                         int lastSpaceIndex = intro.lastIndexOf(" ");
                         intro = intro.substring(0, lastSpaceIndex);
+                        itemPO.setDescription(intro);
+
                         String goodsTime = parse.getElementsByClass("goodsTime").get(0).text().substring(6);
                         lastSpaceIndex = goodsTime.lastIndexOf(" ");
                         goodsTime = goodsTime.substring(0, lastSpaceIndex);
-
-                        String img = parse.getElementById("imgsShower").children().get(0).attr("src");
-
-                        itemPO.setDescription(intro);
                         itemPO.setCreateTime(goodsTime);
-                        itemPO.setName(name);
-                        itemPO.setPrice(Integer.parseInt(price));
+
+                        String img = Objects.requireNonNull(parse.getElementById("imgsShower")).children().get(0).attr("src");
                         itemPO.setImgUrl(img);
 
                         if (System.currentTimeMillis() - tempStart <= 3000) {
@@ -64,6 +70,7 @@ public class UpdateService extends Service<List<ItemPO>> {
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
+                updateMessage("数据获取完成，正在更新数据库……");
                 return itemPOList;
             }
         };
