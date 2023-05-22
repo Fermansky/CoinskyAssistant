@@ -74,8 +74,6 @@ public class App extends Application {
         primaryStage.show();
 
         VoiceUtil.play(VoicePrompt.DAILY_GREETING);
-
-        crawler.start();
     }
 
     @Override

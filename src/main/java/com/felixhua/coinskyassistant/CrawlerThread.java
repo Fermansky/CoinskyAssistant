@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
  * Experimental. Used in the crawlWithMultipleThread Method.
  */
 public class CrawlerThread implements Callable<String> {
-    private Crawler crawler;
+    private final Crawler crawler;
 
     public CrawlerThread(Crawler crawler) {
         this.crawler = crawler;

@@ -1,8 +1,10 @@
 package com.felixhua.coinskyassistant.controller;
 
 import com.felixhua.coinskyassistant.Crawler;
+import com.felixhua.coinskyassistant.entity.GoodsItem;
 import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.mapper.ItemMapper;
 import com.felixhua.coinskyassistant.service.UpdateService;
 import com.felixhua.coinskyassistant.ui.MessagePane;
@@ -10,6 +12,7 @@ import com.felixhua.coinskyassistant.ui.SettingStage;
 import com.felixhua.coinskyassistant.util.ConstantUtil;
 import com.felixhua.coinskyassistant.util.DownloadUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
+import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -35,6 +38,7 @@ public class MainController {
     private SqlSessionFactory sqlSessionFactory;
     private ItemMapper itemMapper;
     private UpdateService updateService;
+    private CrawlingController crawlingController;
 
     public static MainController getInstance() {
         return mainController;
@@ -125,7 +129,13 @@ public class MainController {
         });
     }
 
+    private void initCrawlingController() {
+        this.crawlingController = CrawlingController.getInstance();
+        crawlingController.setMainController(this);
+    }
+
     private MainController() {
+        initCrawlingController();
         initUpdateService();
     }
 }

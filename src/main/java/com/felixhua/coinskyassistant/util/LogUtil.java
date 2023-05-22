@@ -10,8 +10,8 @@ import java.util.Date;
 
 public class LogUtil {
     private static BufferedWriter writer;
-    private static File logFile;
-    private static DateFormat dateFormat;
+    private static final File logFile;
+    private static final DateFormat dateFormat;
 
     static {
         dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");

@@ -2,6 +2,9 @@ package com.felixhua.coinskyassistant.ui;
 
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.GoodsItem;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
+import com.felixhua.coinskyassistant.util.LogUtil;
+import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,6 +19,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MessagePane extends Pane {
     private boolean ready = false;
@@ -145,6 +150,21 @@ public class MessagePane extends Pane {
     }
 
     public void updateItem(GoodsItem item) {
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        if (!isReady()) {
+            if (date.equals(item.getTime().split(" ")[0])) {
+                if (item.getPrice().endsWith("议价")) {
+                    VoiceUtil.play(VoicePrompt.END_OF_DAY);
+                }
+                else VoiceUtil.play(VoicePrompt.STARTED);
+            }
+            else VoiceUtil.play(VoicePrompt.NOT_STARTED);
+        } else {
+            if (item.getPrice().endsWith("议价")) {
+                VoiceUtil.play(VoicePrompt.END_OF_DAY);
+            }
+            else VoiceUtil.play(VoicePrompt.NEW_ITEM);
+        }
         this.item = item;
         Platform.runLater(() -> {
             this.imageView.setImage(item.getImage());
@@ -169,6 +189,23 @@ public class MessagePane extends Pane {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+
+    public void processLatestItem(GoodsItem latestItem) {
+        if (item == null || !item.getName().equals(latestItem.getName())) {
+            updateItem(latestItem);
+            LogUtil.log("新上架货品 " + latestItem + " 。");
+            if (latestItem.getStatus().equals("已售")) {
+                itemSold();
+            }
+        } else if (latestItem.getStatus().equals("已售") && item.getStatus().equals("待售")) {
+            this.item = latestItem;
+            itemSold();
+            LogUtil.log("商品 " + latestItem.getName() + " 已售出。");
+            VoiceUtil.play(VoicePrompt.ITEM_SOLD);
+        } else {
+            LogUtil.log("无新上架商品。");
+        }
     }
 
     public MessagePane (MainController mainController) {

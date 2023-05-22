@@ -9,7 +9,7 @@ public enum VoicePrompt {
     ITEM_SOLD("item_sold"),
     END_OF_DAY("end_of_day");
 
-    private String name;
+    private final String name;
 
     public String getName() {
         return name;

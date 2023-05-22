@@ -28,6 +28,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Depreciated, user CrawlingScheduledService since 0.1.1
+ */
 public class Crawler extends Thread {
     private static final int DEFAULT_SLEEP_TIME = 10000; // 10 seconds
     public static String url = "https://www.yy11.com/shop/show/index/id/2636.html";
