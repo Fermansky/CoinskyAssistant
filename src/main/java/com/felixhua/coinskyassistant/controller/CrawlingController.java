@@ -5,6 +5,9 @@ import com.felixhua.coinskyassistant.service.CrawlingScheduledService;
 import com.felixhua.coinskyassistant.util.LogUtil;
 
 public class CrawlingController {
+    private long averageCrawlingTime = 0;
+    private int failureCount = 0;
+    private int successCount = 0;
     private static final CrawlingController instance = new CrawlingController();
     private MainController mainController;
     private CrawlingScheduledService crawlingScheduledService;
@@ -17,13 +20,29 @@ public class CrawlingController {
     public void startCrawling() {
         this.crawlingScheduledService.start();
     }
+    public long getAverageCrawlingTime() {
+        return averageCrawlingTime;
+    }
+    public int getFailureCount() {
+        return failureCount;
+    }
+
+    public int getSuccessCount() {
+        return successCount;
+    }
+
     private void initCrawlingService(){
         this.crawlingScheduledService = new CrawlingScheduledService();
+        crawlingScheduledService.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            if(newValue != null) {
+                successCount ++;
+            }
+        }));
         crawlingScheduledService.lastValueProperty().addListener(((observable, oldValue, newValue) -> {
             if(newValue == null) {
+                failureCount ++;
                 return;
             }
-            System.out.println("lastValueProperty " + newValue);
             mainController.getMessagePane().processLatestItem(newValue);
             if(newValue.getPrice().endsWith("0")){
                 if(mainController.getItemMapper().checkItem(newValue.getItemUrl()) == 0) {
@@ -32,10 +51,17 @@ public class CrawlingController {
                     LogUtil.log(newValue.getName() + " 已被加入数据库");
                 }
             }
+            successCount ++;
         }));
         crawlingScheduledService.messageProperty().addListener((observable, oldValue, newValue) -> {
             if(!newValue.isEmpty()) {
-                mainController.getMessagePane().setDelayLabel(Integer.parseInt(newValue));
+                long crawlingTimeMillis = Long.parseLong(newValue);
+                mainController.getMessagePane().setDelayLabel((int) (crawlingTimeMillis / 1000));
+                if(averageCrawlingTime == 0) {
+                    averageCrawlingTime = crawlingTimeMillis;
+                } else {
+                    averageCrawlingTime = (averageCrawlingTime + crawlingTimeMillis) / 2;
+                }
             }
         });
     }

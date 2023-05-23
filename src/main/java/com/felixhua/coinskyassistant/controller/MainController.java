@@ -1,38 +1,25 @@
 package com.felixhua.coinskyassistant.controller;
 
-import com.felixhua.coinskyassistant.Crawler;
-import com.felixhua.coinskyassistant.entity.GoodsItem;
 import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
-import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.mapper.ItemMapper;
 import com.felixhua.coinskyassistant.service.UpdateService;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
 import com.felixhua.coinskyassistant.util.ConstantUtil;
 import com.felixhua.coinskyassistant.util.DownloadUtil;
-import com.felixhua.coinskyassistant.util.LogUtil;
-import com.felixhua.coinskyassistant.util.VoiceUtil;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 public class MainController {
     private static final MainController mainController = new MainController();
     public MessagePane messagePane;
-    public Crawler crawler;
     public SettingStage settingStage;
     public ObjectProperty<VoiceAssistant> voiceAssistantProperty = new SimpleObjectProperty<>();
     private SqlSessionFactory sqlSessionFactory;
@@ -44,10 +31,6 @@ public class MainController {
         return mainController;
     }
 
-    public void log(String info) {
-//        LogUtil.appendLog(new Date() + " " + info + "\n");
-//        settingStage.appendLog();
-    }
     public void updateInfo() {
         List<ItemPO> unprocessedItems = getItemMapper().selectItemsWithIncompleteProperties();
         updateService.setItemPOList(unprocessedItems);
@@ -58,17 +41,10 @@ public class MainController {
         }
     }
 
-    public ReadOnlyStringProperty getUpdateServiceMessageProperty(){
-        return updateService.messageProperty();
-    }
-
     public void showInfo(String info) {
         settingStage.getBottomInfo().setText(info);
     }
 
-    public void setCrawler(Crawler crawler) {
-        this.crawler = crawler;
-    }
 
     public void setMessagePane(MessagePane messagePane) {
         this.messagePane = messagePane;
@@ -84,10 +60,6 @@ public class MainController {
         this.itemMapper = itemMapper;
     }
 
-    public Crawler getCrawler() {
-        return crawler;
-    }
-
     public MessagePane getMessagePane() {
         return messagePane;
     }
@@ -100,12 +72,12 @@ public class MainController {
         return voiceAssistantProperty.get();
     }
 
-    public SqlSessionFactory getSqlSessionFactory() {
-        return sqlSessionFactory;
-    }
-
     public ItemMapper getItemMapper() {
         return itemMapper;
+    }
+
+    public CrawlingController getCrawlingController() {
+        return crawlingController;
     }
 
     private void initUpdateService() {

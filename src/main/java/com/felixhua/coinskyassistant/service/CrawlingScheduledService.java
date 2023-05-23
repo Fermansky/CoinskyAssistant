@@ -52,7 +52,7 @@ public class CrawlingScheduledService extends ScheduledService<GoodsItem> {
                 return null;
             }
             failureCount = 0;
-            updateMessage(String.valueOf((System.currentTimeMillis() - startTime) / 1000));
+            updateMessage(String.valueOf(System.currentTimeMillis() - startTime));
             return latestItem;
         }
     }
