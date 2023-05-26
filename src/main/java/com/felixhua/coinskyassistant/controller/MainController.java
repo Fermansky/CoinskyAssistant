@@ -32,7 +32,7 @@ public class MainController {
     }
 
     public void updateInfo() {
-        List<ItemPO> unprocessedItems = getItemMapper().selectItemsWithIncompleteProperties();
+        List<ItemPO> unprocessedItems = getItemMapper().selectItemsWithoutDescription();
         updateService.setItemPOList(unprocessedItems);
         if(updateService.getState().equals(Worker.State.READY)) {
             updateService.start();
@@ -90,8 +90,10 @@ public class MainController {
             for(ItemPO itemPO : itemPOS) {
                 try {
                     String imageUrl = itemPO.getImgUrl();
-                    String fileName = ConstantUtil.LOCAL_IMAGE_STORAGE + imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-                    DownloadUtil.download(imageUrl, fileName);
+                    if (imageUrl != null) {
+                        String fileName = ConstantUtil.LOCAL_IMAGE_STORAGE + imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+                        DownloadUtil.download(imageUrl, fileName);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

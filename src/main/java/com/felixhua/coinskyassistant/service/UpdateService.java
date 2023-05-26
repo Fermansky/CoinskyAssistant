@@ -1,6 +1,8 @@
 package com.felixhua.coinskyassistant.service;
 
 import com.felixhua.coinskyassistant.entity.ItemPO;
+import com.felixhua.coinskyassistant.enums.LogLevel;
+import com.felixhua.coinskyassistant.util.LogUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -38,9 +40,18 @@ public class UpdateService extends Service<List<ItemPO>> {
                         long tempStart = System.currentTimeMillis();
                         updateMessage("获取数据中：" + (itemPOList.indexOf(itemPO) + 1) + "/" + itemPOList.size());
                         HtmlPage page = webClient.getPage(itemPO.getUrl());
-                        webClient.waitForBackgroundJavaScript(10000);
+                        int jsLeft = webClient.waitForBackgroundJavaScript(10000);
+                        if(jsLeft != 0) {
+                            LogUtil.log(LogLevel.WARNING, "获取" + itemPO.getName() + "信息失败");
+                            continue;
+                        }
                         Document parse = Jsoup.parse(page.asXml());
 
+                        if(parse.title().equals("当前操作错误提示")) {
+                            LogUtil.log(LogLevel.WARNING, "获取" + itemPO.getName() + "信息失败");
+                            handleCrawlFailure(itemPO);
+                            continue;
+                        }
                         String name = parse.getElementsByClass("goodsTitle").get(0).text();
                         name = name.substring(name.indexOf("]") + 1);
                         itemPO.setName(name);
@@ -74,5 +85,9 @@ public class UpdateService extends Service<List<ItemPO>> {
                 return itemPOList;
             }
         };
+    }
+
+    private void handleCrawlFailure(ItemPO itemPO) {
+        itemPO.setDescription("获取该商品信息失败，这种情况可能是该商品在上架后很快被商家删除");
     }
 }
