@@ -1,5 +1,6 @@
 package com.felixhua.coinskyassistant.service;
 
+import com.felixhua.coinskyassistant.entity.ImagePO;
 import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.enums.LogLevel;
 import com.felixhua.coinskyassistant.util.LogUtil;
@@ -10,8 +11,11 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,7 +75,13 @@ public class UpdateService extends Service<List<ItemPO>> {
                         goodsTime = goodsTime.substring(0, lastSpaceIndex);
                         itemPO.setCreateTime(goodsTime);
 
-                        String img = Objects.requireNonNull(parse.getElementById("imgsShower")).children().get(0).attr("src");
+                        Elements imgsShower = Objects.requireNonNull(parse.getElementById("imgsShower")).children();
+                        itemPO.setImagePOS(new ArrayList<>());
+                        for(Element img : imgsShower) {
+                            ImagePO imagePO = new ImagePO(itemPO.getId(), img.attr("src"));
+                            itemPO.getImagePOS().add(imagePO);
+                        }
+                        String img = imgsShower.get(0).attr("src");
                         itemPO.setImgUrl(img);
 
                         if (System.currentTimeMillis() - tempStart <= 3000) {

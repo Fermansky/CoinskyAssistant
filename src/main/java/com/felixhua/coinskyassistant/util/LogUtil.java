@@ -3,7 +3,10 @@ package com.felixhua.coinskyassistant.util;
 import com.felixhua.coinskyassistant.enums.LogLevel;
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

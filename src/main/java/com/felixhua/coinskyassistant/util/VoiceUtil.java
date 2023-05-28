@@ -1,9 +1,9 @@
 package com.felixhua.coinskyassistant.util;
 
-import com.felixhua.coinskyassistant.enums.LogLevel;
-import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
+import com.felixhua.coinskyassistant.enums.LogLevel;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 

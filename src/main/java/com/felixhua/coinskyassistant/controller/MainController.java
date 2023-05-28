@@ -1,5 +1,6 @@
 package com.felixhua.coinskyassistant.controller;
 
+import com.felixhua.coinskyassistant.entity.ImagePO;
 import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.mapper.ItemMapper;
@@ -9,7 +10,6 @@ import com.felixhua.coinskyassistant.ui.SettingStage;
 import com.felixhua.coinskyassistant.util.ConstantUtil;
 import com.felixhua.coinskyassistant.util.DownloadUtil;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -93,6 +93,12 @@ public class MainController {
                     if (imageUrl != null) {
                         String fileName = ConstantUtil.LOCAL_IMAGE_STORAGE + imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
                         DownloadUtil.download(imageUrl, fileName);
+                    }
+                    List<ImagePO> imagePOS = itemPO.getImagePOS();
+                    if(imagePOS != null) {
+                        for(ImagePO imagePO : imagePOS) {
+                            itemMapper.insertImage(imagePO);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

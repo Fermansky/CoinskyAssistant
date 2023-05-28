@@ -2,6 +2,8 @@ package com.felixhua.coinskyassistant.entity;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class ItemPO {
     private int id;
@@ -11,4 +13,5 @@ public class ItemPO {
     private String url;
     private String createTime;
     private String imgUrl;
+    private List<ImagePO> imagePOS;
 }

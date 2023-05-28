@@ -1,8 +1,8 @@
 package com.felixhua.coinskyassistant.ui;
 
-import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
+import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.application.Platform;
@@ -10,7 +10,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
