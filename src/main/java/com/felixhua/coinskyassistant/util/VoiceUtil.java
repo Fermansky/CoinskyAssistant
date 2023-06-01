@@ -13,7 +13,7 @@ public class VoiceUtil {
     private static MediaPlayer mp;
 
     public static void play(VoiceAssistant assistant, VoicePrompt prompt) {
-        if (mp != null && mp.getStatus().equals(MediaPlayer.Status.PLAYING)) {
+        if (mp != null && (mp.getStatus().equals(MediaPlayer.Status.PLAYING) || mp.getStatus().equals(MediaPlayer.Status.UNKNOWN))) {
             mp.dispose();
         }
         String path = "/voice/" + assistant.getName() + "/" + prompt.getName() + ".mp3";

@@ -1,5 +1,6 @@
 package com.felixhua.coinskyassistant.controller;
 
+import com.felixhua.coinskyassistant.constants.Constant;
 import com.felixhua.coinskyassistant.entity.ImagePO;
 import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
@@ -7,7 +8,6 @@ import com.felixhua.coinskyassistant.mapper.ItemMapper;
 import com.felixhua.coinskyassistant.service.UpdateService;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
-import com.felixhua.coinskyassistant.util.ConstantUtil;
 import com.felixhua.coinskyassistant.util.DownloadUtil;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -91,7 +91,7 @@ public class MainController {
                 try {
                     String imageUrl = itemPO.getImgUrl();
                     if (imageUrl != null) {
-                        String fileName = ConstantUtil.LOCAL_IMAGE_STORAGE + imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+                        String fileName = Constant.LOCAL_IMAGE_STORAGE + imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
                         DownloadUtil.download(imageUrl, fileName);
                     }
                     List<ImagePO> imagePOS = itemPO.getImagePOS();

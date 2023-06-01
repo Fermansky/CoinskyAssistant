@@ -1,8 +1,8 @@
 package com.felixhua.coinskyassistant.service;
 
+import com.felixhua.coinskyassistant.constants.Constant;
 import com.felixhua.coinskyassistant.entity.GoodsItem;
 import com.felixhua.coinskyassistant.enums.LogLevel;
-import com.felixhua.coinskyassistant.util.ConstantUtil;
 import com.felixhua.coinskyassistant.util.HtmlUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -12,6 +12,9 @@ import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.util.Duration;
 
+/**
+ * Depreciated. Use CrawlingService instead.
+ */
 public class CrawlingScheduledService extends ScheduledService<GoodsItem> {
     private static WebClient webClient;
     private int failureCount;
@@ -40,7 +43,7 @@ public class CrawlingScheduledService extends ScheduledService<GoodsItem> {
         @Override
         protected GoodsItem call() throws Exception {
             long startTime = System.currentTimeMillis();
-            HtmlPage page = webClient.getPage(ConstantUtil.TAO_URL);
+            HtmlPage page = webClient.getPage(Constant.TAO_URL);
             int jsLeft = webClient.waitForBackgroundJavaScript(getTimeoutMillis());
             if (jsLeft > 0) {
                 LogUtil.log(LogLevel.WARNING, jsLeft + "项JS任务未完成，商品获取失败。");

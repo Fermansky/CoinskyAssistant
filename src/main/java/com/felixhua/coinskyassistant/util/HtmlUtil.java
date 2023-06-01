@@ -1,14 +1,39 @@
 package com.felixhua.coinskyassistant.util;
 
+import com.felixhua.coinskyassistant.constants.Constant;
 import com.felixhua.coinskyassistant.entity.GoodsItem;
+import com.felixhua.coinskyassistant.entity.JQueryResultPO;
 import com.felixhua.coinskyassistant.enums.LogLevel;
+import com.google.gson.Gson;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class HtmlUtil {
+    static Gson gson = new Gson();
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public static JQueryResultPO parseJson(String json) {
+        //        System.out.println(jQueryResultPO.getItemDTO(0));
+        return gson.fromJson(json, JQueryResultPO.class);
+    }
+
+    public static String getFormattedTime(long epochSecond) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), ZoneId.systemDefault());
+        return localDateTime.format(formatter);
+    }
+
+    /**
+     * Depreciated.
+     * @param html
+     * @return
+     */
     public static GoodsItem getLatestItem(String html) {
         if (Jsoup.parse(html).head().select("title").text().equals("当前操作错误提示")) {
             LogUtil.log("访问速度过快，访问被拒绝。");
@@ -19,7 +44,7 @@ public class HtmlUtil {
         try {
             Element first = Jsoup.parse(html).body().select(".goodsitem").get(0);
             if (first == null)  return null;
-            goodsItem.setItemUrl(ConstantUtil.COINSKY_URL + first.select("a").first().attr("href"));
+            goodsItem.setItemUrl(Constant.COINSKY_URL + first.select("a").first().attr("href"));
             String imgUrl = first.select(".itemFace").first().select("img").first().attr("src");
             goodsItem.setImgUrl(imgUrl);
             goodsItem.setPrice(getTextByClass(first, "itemPrice").split(" ")[0]);

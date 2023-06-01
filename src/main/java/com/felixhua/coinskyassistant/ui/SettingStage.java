@@ -1,5 +1,6 @@
 package com.felixhua.coinskyassistant.ui;
 
+import com.felixhua.coinskyassistant.constants.Constant;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
@@ -8,6 +9,7 @@ import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -47,16 +49,18 @@ public class SettingStage extends Stage {
         ImageView iconView = new ImageView(MessagePane.class.getResource("/icon.png").toExternalForm());
         iconView.setFitWidth(30);
         iconView.setFitHeight(30);
-        AnchorPane.setLeftAnchor(iconView, 5.0);
-        AnchorPane.setTopAnchor(iconView, 5.0);
 
         Label titleLabel = new Label("钱币天堂助手控制面板");
         titleLabel.setStyle("-fx-font-weight: bold");
         titleLabel.setFont(new Font(15));
         titleLabel.setTextFill(Color.WHITE);
         titleLabel.setPrefHeight(40);
-        AnchorPane.setTopAnchor(titleLabel, 0.0);
-        AnchorPane.setLeftAnchor(titleLabel, 40.0);
+
+        HBox topHBox = new HBox(iconView, titleLabel);
+        topHBox.setPrefHeight(40);
+        topHBox.setAlignment(Pos.CENTER_LEFT);
+        topHBox.setSpacing(5);
+        AnchorPane.setLeftAnchor(topHBox, 5.0);
 
         BorderPane closeButton = new BorderPane();
         Region closeRegion = new Region();
@@ -71,7 +75,7 @@ public class SettingStage extends Stage {
         AnchorPane.setRightAnchor(closeButton, 0.0);
         AnchorPane.setTopAnchor(closeButton, 0.0);
 
-        topBar.getChildren().addAll(iconView, titleLabel, closeButton);
+        topBar.getChildren().addAll(topHBox, closeButton);
     }
 
     private void initBottomBar() {
@@ -106,6 +110,18 @@ public class SettingStage extends Stage {
         });
         AnchorPane.setTopAnchor(updateInfoButton, 40.0);
         AnchorPane.setRightAnchor(updateInfoButton, 270.0);
+
+        Label testLabel = new Label("测试功能:");
+        testLabel.getStyleClass().add("setting-label");
+        AnchorPane.setLeftAnchor(testLabel, 10.0);
+        AnchorPane.setTopAnchor(testLabel, 70.0);
+
+        Button testButton =  new Button("测试功能");
+        testButton.setOnMousePressed(event -> {
+            controller.getCrawlingController().startTestCrawlingService();
+        });
+        AnchorPane.setTopAnchor(testButton, 70.0);
+        AnchorPane.setRightAnchor(testButton, 270.0);
 
         Label soundSettingLabel = new Label("语音助手:");
         soundSettingLabel.getStyleClass().add("setting-label");
@@ -142,7 +158,7 @@ public class SettingStage extends Stage {
         AnchorPane.setTopAnchor(voiceAssistantView, 40.0);
 
         contentPane.getChildren().addAll(logLabel, soundSettingLabel, voiceAssistantChoiceBox,
-                voiceAssistantView, volumeSlider, openLogFileButton, updateInfoButton);
+                voiceAssistantView, volumeSlider, openLogFileButton, updateInfoButton, testLabel, testButton);
     }
 
     private void initSettingPane() {

@@ -2,6 +2,8 @@ package com.felixhua.coinskyassistant.ui;
 
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.GoodsItem;
+import com.felixhua.coinskyassistant.entity.ItemPO;
+import com.felixhua.coinskyassistant.entity.ItemVO;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
@@ -21,11 +23,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class MessagePane extends Pane {
+    /**
+     * whether the program has started.
+     */
     private boolean ready = false;
+    private String date = null;
     private final MainController controller;
     private GoodsItem item;
+    private ItemVO itemVO;
     private ImageView imageView;
     private Label nameLabel;
     private Label priceLabel;
@@ -60,11 +68,11 @@ public class MessagePane extends Pane {
     private void initDelayLabel() {
         delayLabel = new Label("0");
         delayLabel.getStyleClass().add("delay-label");
-        delayLabel.setMaxSize(20, 20);
-        delayLabel.setMinSize(20, 20);
+        delayLabel.setMaxSize(30, 20);
+        delayLabel.setMinSize(30, 20);
         delayLabel.setAlignment(Pos.BOTTOM_RIGHT);
         delayLabel.setTextFill(Color.LAWNGREEN);
-        delayLabel.relocate(370, 170);
+        delayLabel.relocate(360, 170);
     }
 
     private void initCloseButton() {
@@ -136,17 +144,44 @@ public class MessagePane extends Pane {
     }
 
     public void setDelayLabel(int delay) {
-        // delay is in seconds
-        Platform.runLater(() -> {
-            delayLabel.setText(String.valueOf(delay));
-            if (delay <= 5) {
-                delayLabel.setTextFill(Color.LAWNGREEN);
-            } else if (delay < 10) {
-                delayLabel.setTextFill(Color.GOLD);
-            } else {
-                delayLabel.setTextFill(Color.RED);
+        // delay is in milliseconds
+        delayLabel.setText(String.valueOf(delay));
+        if (delay <= 200) {
+            delayLabel.setTextFill(Color.LAWNGREEN);
+        } else if (delay < 500) {
+            delayLabel.setTextFill(Color.GOLD);
+        } else {
+            delayLabel.setTextFill(Color.RED);
+        }
+    }
+
+    public void updateItem(ItemVO itemVO) {
+        if(itemVO == null || itemVO.equals(this.itemVO)) {
+            return ;
+        }
+        if (!isReady()) {
+            if (date.equals(itemVO.getTime().split(" ")[0])) {
+                if (itemVO.getFormattedPrice().equals("¥议价")) {
+                    VoiceUtil.play(VoicePrompt.END_OF_DAY);
+                }
+                else VoiceUtil.play(VoicePrompt.STARTED);
             }
-        });
+            else VoiceUtil.play(VoicePrompt.NOT_STARTED);
+        } else {
+            if (itemVO.getFormattedPrice().equals("¥议价")) {
+                VoiceUtil.play(VoicePrompt.END_OF_DAY);
+            }
+            else VoiceUtil.play(VoicePrompt.NEW_ITEM);
+        }
+
+        this.imageView.setImage(itemVO.getImage());
+        this.nameLabel.setText(itemVO.getName());
+        this.priceLabel.setText(itemVO.getFormattedPrice());
+        priceLabel.setOpacity(1);
+        this.itemVO = itemVO;
+        if (!ready) {
+            ready = true;
+        }
     }
 
     public void updateItem(GoodsItem item) {
@@ -211,8 +246,11 @@ public class MessagePane extends Pane {
     public MessagePane (MainController mainController) {
         controller = mainController;
         controller.setMessagePane(this);
-        this.getStylesheets().add(MessagePane.class.getResource("/css/MessagePane.css").toExternalForm());
+        this.getStylesheets().add(Objects.requireNonNull(MessagePane.class.getResource("/css/MessagePane.css")).toExternalForm());
 
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        this.date = simpleDateFormat.format(date);
         initLayout();
     }
 }

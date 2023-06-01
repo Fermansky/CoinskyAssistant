@@ -9,4 +9,7 @@ module CoinskyAssistant {
     requires org.mybatis;
     requires javafx.media;
     requires java.sql;
+    requires com.google.gson;
+    requires org.apache.httpcomponents.httpcore;
+    requires org.apache.httpcomponents.httpclient;
 }
