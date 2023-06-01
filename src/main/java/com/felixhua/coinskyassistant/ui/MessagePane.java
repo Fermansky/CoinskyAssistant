@@ -1,8 +1,6 @@
 package com.felixhua.coinskyassistant.ui;
 
 import com.felixhua.coinskyassistant.controller.MainController;
-import com.felixhua.coinskyassistant.entity.GoodsItem;
-import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.entity.ItemVO;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.util.LogUtil;
@@ -30,9 +28,8 @@ public class MessagePane extends Pane {
      * whether the program has started.
      */
     private boolean ready = false;
-    private String date = null;
+    private final String date;
     private final MainController controller;
-    private GoodsItem item;
     private ItemVO itemVO;
     private ImageView imageView;
     private Label nameLabel;
@@ -52,7 +49,6 @@ public class MessagePane extends Pane {
         nameLabel.setTextFill(Color.WHITE);
         nameLabel.relocate(200, 10);
     }
-
     private void initPriceLabel() {
         priceLabel = new Label("￥价格");
         priceLabel.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -64,7 +60,6 @@ public class MessagePane extends Pane {
         priceLabel.setMaxHeight(90);
         priceLabel.relocate(200, 100);
     }
-
     private void initDelayLabel() {
         delayLabel = new Label("0");
         delayLabel.getStyleClass().add("delay-label");
@@ -74,7 +69,6 @@ public class MessagePane extends Pane {
         delayLabel.setTextFill(Color.LAWNGREEN);
         delayLabel.relocate(360, 170);
     }
-
     private void initCloseButton() {
         closeButton = new StackPane();
         Region region = new Region();
@@ -89,7 +83,6 @@ public class MessagePane extends Pane {
 //            System.exit(0);
         });
     }
-
     private void initSettingButton() {
         settingButton = new StackPane();
         Region region = new Region();
@@ -109,7 +102,6 @@ public class MessagePane extends Pane {
             }
         });
     }
-
     private void initLayout() {
         setPrefHeight(200);
         setPrefWidth(400);
@@ -121,11 +113,11 @@ public class MessagePane extends Pane {
         imageView.relocate(10, 10);
         imageView.setCursor(Cursor.HAND);
         imageView.setOnMouseClicked(event -> {
-            if (item != null) {
+            if (itemVO != null) {
                 Desktop desktop = Desktop.getDesktop();
                 if (Desktop.isDesktopSupported() && desktop.isSupported(Desktop.Action.BROWSE)) {
                     try {
-                        URI uri = new URI(item.getItemUrl());
+                        URI uri = new URI(itemVO.getUrl());
                         desktop.browse(uri);
                     } catch (IOException | URISyntaxException e) {
                         e.printStackTrace();
@@ -143,22 +135,7 @@ public class MessagePane extends Pane {
         getChildren().addAll(imageView, nameLabel, priceLabel, delayLabel, closeButton, settingButton);
     }
 
-    public void setDelayLabel(int delay) {
-        // delay is in milliseconds
-        delayLabel.setText(String.valueOf(delay));
-        if (delay <= 200) {
-            delayLabel.setTextFill(Color.LAWNGREEN);
-        } else if (delay < 500) {
-            delayLabel.setTextFill(Color.GOLD);
-        } else {
-            delayLabel.setTextFill(Color.RED);
-        }
-    }
-
-    public void updateItem(ItemVO itemVO) {
-        if(itemVO == null || itemVO.equals(this.itemVO)) {
-            return ;
-        }
+    private void playVoiceOnUpdate(ItemVO itemVO) {
         if (!isReady()) {
             if (date.equals(itemVO.getTime().split(" ")[0])) {
                 if (itemVO.getFormattedPrice().equals("¥议价")) {
@@ -173,73 +150,54 @@ public class MessagePane extends Pane {
             }
             else VoiceUtil.play(VoicePrompt.NEW_ITEM);
         }
+    }
 
-        this.imageView.setImage(itemVO.getImage());
+    /**
+     * Update the content of the message pane.
+     * @param itemVO the latest item
+     */
+    public void updateItem(ItemVO itemVO) {
+        if(itemVO == null || itemVO.equals(this.itemVO)) {
+            return ;
+        }
+        playVoiceOnUpdate(itemVO);
+
+        this.imageView.setImage(itemVO.getThumbnailImage());
         this.nameLabel.setText(itemVO.getName());
         this.priceLabel.setText(itemVO.getFormattedPrice());
         priceLabel.setOpacity(1);
+
+        if (this.itemVO != null && this.itemVO.getStatus() == 0 && itemVO.getStatus() == 2) {
+            itemSold();
+        }
         this.itemVO = itemVO;
         if (!ready) {
+            if(itemVO.getStatus() == 2) {
+                priceLabel.setOpacity(0.5);
+            }
             ready = true;
         }
     }
 
-    public void updateItem(GoodsItem item) {
-        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        if (!isReady()) {
-            if (date.equals(item.getTime().split(" ")[0])) {
-                if (item.getPrice().endsWith("议价")) {
-                    VoiceUtil.play(VoicePrompt.END_OF_DAY);
-                }
-                else VoiceUtil.play(VoicePrompt.STARTED);
-            }
-            else VoiceUtil.play(VoicePrompt.NOT_STARTED);
-        } else {
-            if (item.getPrice().endsWith("议价")) {
-                VoiceUtil.play(VoicePrompt.END_OF_DAY);
-            }
-            else VoiceUtil.play(VoicePrompt.NEW_ITEM);
-        }
-        this.item = item;
-        Platform.runLater(() -> {
-            this.imageView.setImage(item.getImage());
-            this.nameLabel.setText(item.getName());
-            this.priceLabel.setText(item.getPrice());
-            priceLabel.setOpacity(1);
-            if (!ready) {
-                ready = true;
-            }
-        });
-    }
-
     public void itemSold() {
-        Platform.runLater(() -> {
-            this.priceLabel.setOpacity(0.5);
-        });
+        this.priceLabel.setOpacity(0.5);
+        VoiceUtil.play(VoicePrompt.ITEM_SOLD);
+        LogUtil.log("商品 " + itemVO.getName() + " 已售出。");
     }
 
     public boolean isReady() {
         return ready;
     }
 
-    public void setReady(boolean ready) {
-        this.ready = ready;
-    }
-
-    public void processLatestItem(GoodsItem latestItem) {
-        if (item == null || !item.getName().equals(latestItem.getName())) {
-            updateItem(latestItem);
-            LogUtil.log("新上架货品 " + latestItem + " 。");
-            if (latestItem.getStatus().equals("已售")) {
-                itemSold();
-            }
-        } else if (latestItem.getStatus().equals("已售") && item.getStatus().equals("待售")) {
-            this.item = latestItem;
-            itemSold();
-            LogUtil.log("商品 " + latestItem.getName() + " 已售出。");
-            VoiceUtil.play(VoicePrompt.ITEM_SOLD);
+    public void updateDelayLabel(int delay) {
+        // delay is in milliseconds
+        delayLabel.setText(String.valueOf(delay));
+        if (delay < 1000) {
+            delayLabel.setTextFill(Color.LAWNGREEN);
+        } else if (delay < 2000) {
+            delayLabel.setTextFill(Color.GOLD);
         } else {
-            LogUtil.log("无新上架商品。");
+            delayLabel.setTextFill(Color.RED);
         }
     }
 

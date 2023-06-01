@@ -28,7 +28,6 @@ public class VoiceUtil {
         mp.play();
     }
 
-
     public static void play(VoicePrompt prompt) {
         VoiceAssistant assistant = MainController.getInstance().getVoiceAssistant();
         play(assistant, prompt);

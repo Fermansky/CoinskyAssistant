@@ -1,14 +1,11 @@
 package com.felixhua.coinskyassistant.ui;
 
-import com.felixhua.coinskyassistant.constants.Constant;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
@@ -28,6 +25,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.Objects;
+
 public class SettingStage extends Stage {
     private double offsetX, offsetY;
     private final MainController controller;
@@ -46,7 +45,7 @@ public class SettingStage extends Stage {
         topBar.getStyleClass().add("top-bar");
         topBar.setPrefSize(500, 40);
 
-        ImageView iconView = new ImageView(MessagePane.class.getResource("/icon.png").toExternalForm());
+        ImageView iconView = new ImageView(Objects.requireNonNull(MessagePane.class.getResource("/icon.png")).toExternalForm());
         iconView.setFitWidth(30);
         iconView.setFitHeight(30);
 
@@ -105,8 +104,7 @@ public class SettingStage extends Stage {
 
         Button updateInfoButton = new Button("更新数据库");
         updateInfoButton.setOnMousePressed(event -> {
-//            bottomInfo.textProperty().bind(controller.getUpdateServiceMessageProperty());
-            controller.updateInfo();
+//            controller.updateInfo();
         });
         AnchorPane.setTopAnchor(updateInfoButton, 40.0);
         AnchorPane.setRightAnchor(updateInfoButton, 270.0);
@@ -118,7 +116,7 @@ public class SettingStage extends Stage {
 
         Button testButton =  new Button("测试功能");
         testButton.setOnMousePressed(event -> {
-            controller.getCrawlingController().startTestCrawlingService();
+//            controller.getCrawlingController().startTestCrawlingService();
         });
         AnchorPane.setTopAnchor(testButton, 70.0);
         AnchorPane.setRightAnchor(testButton, 270.0);
@@ -137,12 +135,7 @@ public class SettingStage extends Stage {
 
         voiceAssistantChoiceBox = new ChoiceBox<>();
         voiceAssistantChoiceBox.setMaxWidth(100);
-        voiceAssistantChoiceBox.valueProperty().addListener(new ChangeListener<VoiceAssistant>() {
-            @Override
-            public void changed(ObservableValue<? extends VoiceAssistant> observable, VoiceAssistant oldValue, VoiceAssistant newValue) {
-                voiceAssistantView.setImage(newValue.getAvatar());
-            }
-        });
+        voiceAssistantChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> voiceAssistantView.setImage(newValue.getAvatar()));
         controller.voiceAssistantProperty.bind(voiceAssistantChoiceBox.valueProperty());
         AnchorPane.setLeftAnchor(voiceAssistantChoiceBox, 260.0);
         AnchorPane.setTopAnchor(voiceAssistantChoiceBox, 40.0);
@@ -163,7 +156,7 @@ public class SettingStage extends Stage {
 
     private void initSettingPane() {
         settingPane = new BorderPane();
-        settingPane.getStylesheets().add(MessagePane.class.getResource("/css/SettingPane.css").toExternalForm());
+        settingPane.getStylesheets().add(Objects.requireNonNull(MessagePane.class.getResource("/css/SettingPane.css")).toExternalForm());
         settingPane.getStyleClass().add("setting-pane");
         settingPane.setPrefSize(500, 300);
         settingPane.setMaxSize(500, 300);

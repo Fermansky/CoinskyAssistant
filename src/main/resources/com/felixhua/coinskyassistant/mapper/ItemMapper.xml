@@ -10,10 +10,10 @@
         select * from item where description is null
     </select>
     <select id="selectItemsWithoutImg" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
-        select * from item where img is null
+        select * from item where thumbnail_url is null
     </select>
     <select id="selectItemsWithIncompleteProperties" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
-        select * from item where name is null or description is null or price is null or create_time is null or img is null
+        select * from item where name is null or description is null or price is null or create_time is null or thumbnail_url is null
     </select>
     <select id="checkItem">
         select count(*) from item where url = #{url}
@@ -21,16 +21,22 @@
     <select id="getIdByUrl">
         select id from item where url = #{url}
     </select>
+    <select id="selectItemById">
+        select * from item where id = #{id}
+    </select>
     <update id="updateItem">
         update item set description = #{description}, create_time = #{createTime},
-        name = #{name}, price = #{price}, img = #{imgUrl} where id = #{id}
+        name = #{name}, price = #{price}, thumbnail_url = #{imgUrl} where id = #{id}
     </update>
     <insert id="insertItem">
-        INSERT INTO item ( name, description, price, url, create_time )
-        VALUES ( #{name}, #{description}, #{price}, #{url}, #{createTime} )
+        INSERT INTO item ( id, name, description, price, url, create_time, thumbnail_url )
+        VALUES ( #{id}, #{name}, #{description}, #{price}, #{url}, #{createTime}, #{imgUrl} )
     </insert>
-    <insert id="insertImage">
-        INSERT INTO images ( item_id, img_url )
-        VALUES ( #{itemId}, #{url} )
+    <insert id="insertImages" parameterType="java.util.List">
+        INSERT INTO images (item_id, img_url)
+        VALUES
+        <foreach collection="list" item="imagePO" separator=",">
+            (#{imagePO.itemId}, #{imagePO.url})
+        </foreach>
     </insert>
 </mapper>

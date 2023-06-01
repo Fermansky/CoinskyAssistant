@@ -1,13 +1,9 @@
-package com.felixhua.coinskyassistant;
+package com.felixhua.coinskyassistant.util;
+
 import com.felixhua.coinskyassistant.constants.Constant;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
@@ -16,19 +12,17 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 
 /**
- * @Author ZhangLe
- * @Date 2020/11/25 12:33
+ * &#064;Author  ZhangLe
+ * &#064;Date  2020/11/25 12:33
  */
-public class HttpsClient {
+public class HttpsUtil {
 
     private static CloseableHttpClient httpClient;
     private static HttpGet httpGet;
     public static final String CONTENT_TYPE = "Content-Type";
     /**
      * 发送get请求
-     * @param url 发送链接 拼接参数  http://localhost:8090/order?a=1
-     * @return
-     * @throws IOException
+     * @param url 发送链接 拼接参数
      */
     public static String sendGet(String url) throws IOException {
         httpClient = HttpClients.createDefault();

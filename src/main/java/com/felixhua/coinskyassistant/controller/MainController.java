@@ -1,60 +1,54 @@
 package com.felixhua.coinskyassistant.controller;
 
-import com.felixhua.coinskyassistant.constants.Constant;
-import com.felixhua.coinskyassistant.entity.ImagePO;
 import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
+import com.felixhua.coinskyassistant.enums.LogLevel;
 import com.felixhua.coinskyassistant.mapper.ItemMapper;
-import com.felixhua.coinskyassistant.service.UpdateService;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
-import com.felixhua.coinskyassistant.util.DownloadUtil;
+import com.felixhua.coinskyassistant.util.LogUtil;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.concurrent.Worker;
-import org.apache.ibatis.session.SqlSessionFactory;
-
-import java.io.IOException;
-import java.util.List;
 
 public class MainController {
     private static final MainController mainController = new MainController();
     public MessagePane messagePane;
     public SettingStage settingStage;
     public ObjectProperty<VoiceAssistant> voiceAssistantProperty = new SimpleObjectProperty<>();
-    private SqlSessionFactory sqlSessionFactory;
     private ItemMapper itemMapper;
-    private UpdateService updateService;
     private CrawlingController crawlingController;
 
     public static MainController getInstance() {
         return mainController;
     }
 
-    public void updateInfo() {
-        List<ItemPO> unprocessedItems = getItemMapper().selectItemsWithoutDescription();
-        updateService.setItemPOList(unprocessedItems);
-        if(updateService.getState().equals(Worker.State.READY)) {
-            updateService.start();
-        } else {
-            updateService.restart();
+    public void updateAndInsertItem(ItemPO itemPO) {
+        if (itemPO.getPrice() == 0) {
+            return ;
+        }
+        try {
+            int rowsUpdated = itemMapper.updateItem(itemPO); // 尝试执行更新操作
+            if (rowsUpdated == 0) { // 更新失败，执行插入操作
+                itemMapper.insertItem(itemPO);
+                itemMapper.insertImages(itemPO.getImagePOS());
+                LogUtil.log("插入数据 " + itemPO.getName());
+            } else {
+                LogUtil.log("更新数据 " + itemPO.getName());
+            }
+        } catch (Exception e) {
+            // 处理异常
+            LogUtil.log(LogLevel.WARNING, e.getMessage());
         }
     }
 
     public void showInfo(String info) {
         settingStage.getBottomInfo().setText(info);
     }
-
-
     public void setMessagePane(MessagePane messagePane) {
         this.messagePane = messagePane;
     }
-
     public void setSettingStage(SettingStage settingStage) {
         this.settingStage = settingStage;
-    }
-    public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory){
-        this.sqlSessionFactory = sqlSessionFactory;
     }
     public void setItemMapper(ItemMapper itemMapper) {
         this.itemMapper = itemMapper;
@@ -72,41 +66,8 @@ public class MainController {
         return voiceAssistantProperty.get();
     }
 
-    public ItemMapper getItemMapper() {
-        return itemMapper;
-    }
-
     public CrawlingController getCrawlingController() {
         return crawlingController;
-    }
-
-    private void initUpdateService() {
-        this.updateService = new UpdateService();
-        updateService.messageProperty().addListener((observable, oldValue, newValue) -> {
-            showInfo(newValue);
-        });
-        updateService.setOnSucceeded(event -> {
-            List<ItemPO> itemPOS = updateService.getValue();
-            for(ItemPO itemPO : itemPOS) {
-                try {
-                    String imageUrl = itemPO.getImgUrl();
-                    if (imageUrl != null) {
-                        String fileName = Constant.LOCAL_IMAGE_STORAGE + imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-                        DownloadUtil.download(imageUrl, fileName);
-                    }
-                    List<ImagePO> imagePOS = itemPO.getImagePOS();
-                    if(imagePOS != null) {
-                        for(ImagePO imagePO : imagePOS) {
-                            itemMapper.insertImage(imagePO);
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                itemMapper.updateItem(itemPO);
-            }
-            showInfo("数据库更新完成");
-        });
     }
 
     private void initCrawlingController() {
@@ -116,6 +77,5 @@ public class MainController {
 
     private MainController() {
         initCrawlingController();
-        initUpdateService();
     }
 }

@@ -1,7 +1,7 @@
 package com.felixhua.coinskyassistant.entity;
 
-import com.felixhua.coinskyassistant.constants.Constant;
 import com.felixhua.coinskyassistant.util.HtmlUtil;
+import com.felixhua.coinskyassistant.util.StringUtil;
 import lombok.Data;
 
 import java.util.List;
@@ -20,13 +20,12 @@ public class JQueryResultPO {
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setId(Integer.parseInt(element.get(0)));
         String hash = element.get(1);
-        itemDTO.setImgUrl(Constant.COINSKY_IMG_URL + hash.charAt(0) + "/" + hash.charAt(1) + "/" + hash.charAt(2) +
-                "/" + hash.charAt(3) + "/" + hash.substring(4, 32) + ".jpg/s");
+        itemDTO.setImgUrls(StringUtil.divideImgHash(hash));
         itemDTO.setName(element.get(2));
         itemDTO.setStatus(Integer.parseInt(element.get(3)));
         itemDTO.setPrice(Double.parseDouble(element.get(4)));
         long epochSecond = Long.parseLong(element.get(5));
-        itemDTO.setTime(HtmlUtil.getFormattedTime(epochSecond));
+        itemDTO.setCreateTime(HtmlUtil.getFormattedTime(epochSecond));
         itemDTO.setView(Integer.parseInt(element.get(6)));
         itemDTO.setDescription(element.get(10));
         return itemDTO;

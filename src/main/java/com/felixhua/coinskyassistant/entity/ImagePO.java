@@ -8,5 +8,4 @@ import lombok.Data;
 public class ImagePO {
     private int itemId;
     private String url;
-
 }

@@ -13,6 +13,7 @@ public interface ItemMapper {
     int updateItem(ItemPO itemPO);
     int checkItem(String url);
     int getIdByUrl(String url);
+    ItemPO selectItemById(int id);
     void insertItem(ItemPO item);
-    void insertImage(ImagePO imagePO);
+    void insertImages(List<ImagePO> imagePOS);
 }

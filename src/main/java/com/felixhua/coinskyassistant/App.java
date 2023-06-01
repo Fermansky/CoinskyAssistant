@@ -49,7 +49,6 @@ public class App extends Application {
         try {
             inputStream = Resources.getResourceAsStream(resource);
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-            controller.setSqlSessionFactory(sqlSessionFactory);
             inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();

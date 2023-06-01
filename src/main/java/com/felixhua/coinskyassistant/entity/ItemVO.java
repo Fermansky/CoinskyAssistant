@@ -1,5 +1,6 @@
 package com.felixhua.coinskyassistant.entity;
 
+import com.felixhua.coinskyassistant.constants.Constant;
 import javafx.scene.image.Image;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import java.util.Objects;
 
 @Data
 public class ItemVO {
+    private int id;
     private String imgUrl;
     private String name;
     /**
@@ -16,8 +18,11 @@ public class ItemVO {
     private String formattedPrice;
     private String time;
 
-    public Image getImage() {
-        return new Image(imgUrl);
+    public Image getThumbnailImage() {
+        return new Image(imgUrl + "/s");
+    }
+    public String getUrl() {
+        return Constant.COINSKY_SHOP_VIEW_URL + id + ".html";
     }
 
     @Override
@@ -37,6 +42,6 @@ public class ItemVO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(imgUrl, name, status, formattedPrice);
+        return Objects.hash(id, imgUrl, name, status, formattedPrice);
     }
 }
