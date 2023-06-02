@@ -136,7 +136,7 @@ public class MessagePane extends Pane {
     }
 
     private void playVoiceOnUpdate(ItemVO itemVO) {
-        if (!isReady()) {
+        if (!isReady()) {   // 首次更新
             if (date.equals(itemVO.getTime().split(" ")[0])) {
                 if (itemVO.getFormattedPrice().equals("¥议价")) {
                     VoiceUtil.play(VoicePrompt.END_OF_DAY);
@@ -147,8 +147,9 @@ public class MessagePane extends Pane {
         } else {
             if (itemVO.getFormattedPrice().equals("¥议价")) {
                 VoiceUtil.play(VoicePrompt.END_OF_DAY);
+            } else if (itemVO.getId() != this.itemVO.getId()) {
+                VoiceUtil.play(VoicePrompt.NEW_ITEM);
             }
-            else VoiceUtil.play(VoicePrompt.NEW_ITEM);
         }
     }
 

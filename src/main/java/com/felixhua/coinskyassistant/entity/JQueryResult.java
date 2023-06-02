@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class JQueryResultPO {
+public class JQueryResult {
     int code;
     List<List<String>> data;
 

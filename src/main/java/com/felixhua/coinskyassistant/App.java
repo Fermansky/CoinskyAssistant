@@ -3,7 +3,6 @@ package com.felixhua.coinskyassistant;
 import com.felixhua.coinskyassistant.constants.Constant;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
-import com.felixhua.coinskyassistant.enums.LogLevel;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.mapper.ItemMapper;
 import com.felixhua.coinskyassistant.ui.ContentScene;
@@ -23,7 +22,6 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Objects;
 
 public class App extends Application {

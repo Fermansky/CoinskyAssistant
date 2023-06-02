@@ -1,7 +1,7 @@
 package com.felixhua.coinskyassistant.controller;
 
 import com.felixhua.coinskyassistant.entity.ItemDTO;
-import com.felixhua.coinskyassistant.entity.JQueryResultPO;
+import com.felixhua.coinskyassistant.entity.JQueryResult;
 import com.felixhua.coinskyassistant.service.CrawlingService;
 import com.felixhua.coinskyassistant.util.ConvertUtil;
 import com.felixhua.coinskyassistant.util.HtmlUtil;
@@ -52,8 +52,8 @@ public class CrawlingController {
 
         crawlingService.valueProperty().addListener(((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                JQueryResultPO jQueryResultPO = HtmlUtil.parseJson(newValue);
-                ItemDTO itemDTO = jQueryResultPO.getLatestItemDTO();
+                JQueryResult jQueryResult = HtmlUtil.parseJson(newValue);
+                ItemDTO itemDTO = jQueryResult.getLatestItemDTO();
                 successCount ++;
                 if (latestItemDTO != null) {    // 最新商品不为空
                     if (latestItemDTO.getId() == itemDTO.getId()) { // 商品id相同，属于同一件商品
