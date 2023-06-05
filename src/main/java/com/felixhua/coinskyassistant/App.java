@@ -43,7 +43,7 @@ public class App extends Application {
         SettingStage settingStage = new SettingStage(controller);
 
         String resource = "mybatis-config.xml";
-        InputStream inputStream = null;
+        InputStream inputStream;
         try {
             inputStream = Resources.getResourceAsStream(resource);
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
@@ -56,8 +56,9 @@ public class App extends Application {
         ItemMapper mapper = sqlSession.getMapper(ItemMapper.class);
         controller.setItemMapper(mapper);
 
-        VoiceAssistant paimon = new VoiceAssistant("paimon");
+        VoiceAssistant paimon = new VoiceAssistant("paimon", "派蒙");
         paimon.setAvatar("paimon");
+        paimon.setDescription("基于VITS-PAIMON项目");
         settingStage.addVoiceAssistant(paimon);
 
         scene.setFill(new Color(0, 0, 0, 0.5));

@@ -3,6 +3,7 @@ package com.felixhua.coinskyassistant.ui;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.ItemVO;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
+import com.felixhua.coinskyassistant.util.HttpsUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.application.Platform;
@@ -114,15 +115,7 @@ public class MessagePane extends Pane {
         imageView.setCursor(Cursor.HAND);
         imageView.setOnMouseClicked(event -> {
             if (itemVO != null) {
-                Desktop desktop = Desktop.getDesktop();
-                if (Desktop.isDesktopSupported() && desktop.isSupported(Desktop.Action.BROWSE)) {
-                    try {
-                        URI uri = new URI(itemVO.getUrl());
-                        desktop.browse(uri);
-                    } catch (IOException | URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-                }
+                HttpsUtil.browse(itemVO.getUrl());
             }
         });
 

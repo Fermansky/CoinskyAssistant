@@ -3,6 +3,7 @@ package com.felixhua.coinskyassistant.ui;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
+import com.felixhua.coinskyassistant.util.HttpsUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.application.Platform;
@@ -28,6 +29,9 @@ import javafx.stage.StageStyle;
 import java.util.Objects;
 
 public class SettingStage extends Stage {
+    private final String TITLE = "钱币天堂智能助手控制面板";
+    private final String DEFAULT_TIP = "准备就绪";
+
     private double offsetX, offsetY;
     private final MainController controller;
     private Scene settingScene;
@@ -49,7 +53,7 @@ public class SettingStage extends Stage {
         iconView.setFitWidth(30);
         iconView.setFitHeight(30);
 
-        Label titleLabel = new Label("钱币天堂助手控制面板");
+        Label titleLabel = new Label(TITLE);
         titleLabel.setStyle("-fx-font-weight: bold");
         titleLabel.setFont(new Font(15));
         titleLabel.setTextFill(Color.WHITE);
@@ -82,7 +86,7 @@ public class SettingStage extends Stage {
         bottomBar.setPrefHeight(20);
         bottomBar.getStyleClass().add("bottom-bar");
 
-        bottomInfo = new Label("准备就绪");
+        bottomInfo = new Label(DEFAULT_TIP);
         bottomBar.getChildren().add(bottomInfo);
     }
 
@@ -147,6 +151,12 @@ public class SettingStage extends Stage {
         voiceAssistantView.setOnMouseClicked(event -> {
             VoiceUtil.play(VoicePrompt.DAILY_GREETING);
         });
+        voiceAssistantView.setOnMouseEntered(event -> {
+            bottomInfo.setText(voiceAssistantChoiceBox.getValue().getDescription());
+        });
+        voiceAssistantView.setOnMouseExited(event -> {
+            bottomInfo.setText(DEFAULT_TIP);
+        });
         AnchorPane.setLeftAnchor(voiceAssistantView, 350.0);
         AnchorPane.setTopAnchor(voiceAssistantView, 40.0);
 
@@ -181,6 +191,9 @@ public class SettingStage extends Stage {
         settingScene.setFill(null);
     }
 
+    /**
+     * 使顶部的标题条可以拖动。
+     */
     private void setDraggable() {
         topBar.setOnMousePressed(event -> {
             if (event.getX() <= 460) {
@@ -211,15 +224,6 @@ public class SettingStage extends Stage {
         return this.volumeSlider;
     }
 
-    /**
-     * Show info on the bottom bar.
-     */
-    public void showInfo(String info) {
-        Platform.runLater(() -> {
-            bottomInfo.setText(info);
-        });
-    }
-
     public Label getBottomInfo() {
         return bottomInfo;
     }
@@ -233,7 +237,7 @@ public class SettingStage extends Stage {
 
         setDraggable();
         setScene(settingScene);
-        setTitle("钱币天堂bot控制面板");
+        setTitle(TITLE);
         setResizable(false);
         initStyle(StageStyle.TRANSPARENT);
     }

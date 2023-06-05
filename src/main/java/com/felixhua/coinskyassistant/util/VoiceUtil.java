@@ -12,6 +12,11 @@ import java.net.URL;
 public class VoiceUtil {
     private static MediaPlayer mp;
 
+    /**
+     * 播放指定语音助手的指定语音信息。
+     * @param assistant 语音助手
+     * @param prompt 语音信息
+     */
     public static void play(VoiceAssistant assistant, VoicePrompt prompt) {
         if (mp != null && (mp.getStatus().equals(MediaPlayer.Status.PLAYING) || mp.getStatus().equals(MediaPlayer.Status.UNKNOWN))) {
             mp.dispose();
@@ -28,6 +33,10 @@ public class VoiceUtil {
         mp.play();
     }
 
+    /**
+     * 播放当前语音助手的指定语音信息。
+     * @param prompt 语音信息
+     */
     public static void play(VoicePrompt prompt) {
         VoiceAssistant assistant = MainController.getInstance().getVoiceAssistant();
         play(assistant, prompt);

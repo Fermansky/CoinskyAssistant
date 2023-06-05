@@ -9,7 +9,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * &#064;Author  ZhangLe
@@ -38,6 +41,18 @@ public class HttpsUtil {
             response.close();
         }
         return resp;
+    }
+
+    public static void browse(String url) {
+        Desktop desktop = Desktop.getDesktop();
+        if (Desktop.isDesktopSupported() && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                URI uri = new URI(url);
+                desktop.browse(uri);
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 
