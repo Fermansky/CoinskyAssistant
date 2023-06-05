@@ -1,5 +1,6 @@
 package com.felixhua.coinskyassistant.controller;
 
+import com.felixhua.coinskyassistant.entity.CrawlingData;
 import com.felixhua.coinskyassistant.entity.ItemDTO;
 import com.felixhua.coinskyassistant.entity.JQueryResult;
 import com.felixhua.coinskyassistant.service.CrawlingService;
@@ -8,6 +9,7 @@ import com.felixhua.coinskyassistant.util.HtmlUtil;
 import javafx.concurrent.Worker;
 
 public class CrawlingController {
+    private CrawlingData crawlingData;
     private long averageCrawlingTime = 0;
     private int successCount = 0;
     private ItemDTO latestItemDTO;
@@ -34,9 +36,11 @@ public class CrawlingController {
     public int getFailureCount() {
         return 0;
     }
-
     public int getSuccessCount() {
         return successCount;
+    }
+    public CrawlingData getCrawlingData() {
+        return this.crawlingData;
     }
 
     public void startTestCrawlingService() {
@@ -83,6 +87,8 @@ public class CrawlingController {
                 }
             }
         }));
+
+        crawlingData = new CrawlingData();
     }
     private CrawlingController() {
         initCrawlingService();

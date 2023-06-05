@@ -23,6 +23,7 @@ public class HttpsUtil {
     private static CloseableHttpClient httpClient;
     private static HttpGet httpGet;
     public static final String CONTENT_TYPE = "Content-Type";
+
     /**
      * 发送get请求
      * @param url 发送链接 拼接参数
