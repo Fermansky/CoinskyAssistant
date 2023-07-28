@@ -3,6 +3,8 @@ package com.felixhua.coinskyassistant.ui;
 import com.felixhua.coinskyassistant.controller.MainController;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
+import com.felixhua.coinskyassistant.service.CrawlingService;
+import com.felixhua.coinskyassistant.util.AlertUtil;
 import com.felixhua.coinskyassistant.util.HttpsUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
@@ -10,10 +12,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
@@ -27,6 +26,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.util.Objects;
+
+import static com.felixhua.coinskyassistant.util.AlertUtil.displayAlert;
 
 public class SettingStage extends Stage {
     private final String TITLE = "钱币天堂智能助手控制面板";
@@ -106,9 +107,24 @@ public class SettingStage extends Stage {
         AnchorPane.setTopAnchor(openLogFileButton, 10.0);
         AnchorPane.setRightAnchor(openLogFileButton, 270.0);
 
+        TextField updateField = new TextField("30");
+        updateField.setMaxWidth(50);
+        AnchorPane.setTopAnchor(updateField, 40.0);
+        AnchorPane.setLeftAnchor(updateField, 10.0);
         Button updateInfoButton = new Button("更新数据库");
         updateInfoButton.setOnMousePressed(event -> {
-//            controller.updateInfo();
+            String inputText = updateField.getText();
+            try {
+                int number = Integer.parseInt(inputText);
+                if (number >= 1 && number <= 50) {
+                    CrawlingService.crawlAndUpdate(number);
+                    displayAlert("更新成功", "成功更新近" + number + "条数据！");
+                } else {
+                    displayAlert("非法输入", "请输入1~50之间的数！");
+                }
+            } catch (NumberFormatException ex) {
+                displayAlert("非法输入", "请输入有效的整数！");
+            }
         });
         AnchorPane.setTopAnchor(updateInfoButton, 40.0);
         AnchorPane.setRightAnchor(updateInfoButton, 270.0);
@@ -160,7 +176,7 @@ public class SettingStage extends Stage {
         AnchorPane.setLeftAnchor(voiceAssistantView, 350.0);
         AnchorPane.setTopAnchor(voiceAssistantView, 40.0);
 
-        contentPane.getChildren().addAll(logLabel, soundSettingLabel, voiceAssistantChoiceBox,
+        contentPane.getChildren().addAll(logLabel, soundSettingLabel, voiceAssistantChoiceBox, updateField,
                 voiceAssistantView, volumeSlider, openLogFileButton, updateInfoButton, testLabel, testButton);
     }
 

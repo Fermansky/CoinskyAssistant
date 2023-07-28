@@ -1,9 +1,11 @@
 package com.felixhua.coinskyassistant.util;
 
 import com.felixhua.coinskyassistant.constants.Constant;
+import com.felixhua.coinskyassistant.entity.CrawlingData;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
@@ -55,5 +57,19 @@ public class HttpsUtil {
             }
         }
     }
+
+    public static String sendGet(CrawlingData crawlingData) throws IOException, URISyntaxException {
+        URI uri = new URIBuilder()
+                .setScheme("https")
+                .setHost("www.yy11.com")
+                .setPath("api/")
+                .addParameter("m", "shop")
+                .addParameter("c", "lists")
+                .addParameter("v", "search")
+                .addParameter("data", crawlingData.toString())
+                .build();
+        return sendGet(uri.toString());
+    }
+
 }
 

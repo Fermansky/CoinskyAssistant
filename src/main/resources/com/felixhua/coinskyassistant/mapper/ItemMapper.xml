@@ -4,32 +4,32 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.felixhua.coinskyassistant.mapper.ItemMapper">
     <select id="selectAllItems" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
-        select * from item
+        select * from items
     </select>
     <select id="selectItemsWithoutDescription" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
-        select * from item where description is null
+        select * from items where description is null
     </select>
     <select id="selectItemsWithoutImg" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
-        select * from item where thumbnail_url is null
+        select * from items where thumbnail_url is null
     </select>
     <select id="selectItemsWithIncompleteProperties" resultType="com.felixhua.coinskyassistant.entity.ItemPO">
-        select * from item where name is null or description is null or price is null or create_time is null or thumbnail_url is null
+        select * from items where name is null or description is null or price is null or create_time is null or thumbnail_url is null
     </select>
     <select id="checkItem">
-        select count(*) from item where url = #{url}
+        select count(*) from items where url = #{url}
     </select>
     <select id="getIdByUrl">
-        select id from item where url = #{url}
+        select id from items where url = #{url}
     </select>
     <select id="selectItemById">
-        select * from item where id = #{id}
+        select * from items where id = #{id}
     </select>
     <update id="updateItem">
-        update item set description = #{description}, create_time = #{createTime},
+        update items set description = #{description}, create_time = #{createTime},
         name = #{name}, price = #{price}, thumbnail_url = #{imgUrl} where id = #{id}
     </update>
     <insert id="insertItem">
-        INSERT INTO item ( id, name, description, price, url, create_time, thumbnail_url )
+        INSERT INTO items ( id, name, description, price, url, create_time, thumbnail_url )
         VALUES ( #{id}, #{name}, #{description}, #{price}, #{url}, #{createTime}, #{imgUrl} )
     </insert>
     <insert id="insertImages" parameterType="java.util.List">

@@ -13,16 +13,7 @@ public class CrawlingTask extends Task<String> {
     protected String call() throws Exception {
         CrawlingData crawlingData = CrawlingController.getInstance().getCrawlingData();
         long startTimeMillis = System.currentTimeMillis();
-        URI uri = new URIBuilder()
-                .setScheme("https")
-                .setHost("www.yy11.com")
-                .setPath("api/")
-                .addParameter("m", "shop")
-                .addParameter("c", "lists")
-                .addParameter("v", "search")
-                .addParameter("data", crawlingData.toString())
-                .build();
-        String result = HttpsUtil.sendGet(uri.toString());
+        String result = HttpsUtil.sendGet(crawlingData);
         updateMessage(String.valueOf(System.currentTimeMillis() - startTimeMillis));
         return result;
     }
