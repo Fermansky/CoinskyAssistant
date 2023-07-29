@@ -25,22 +25,26 @@ public class CrawlingService extends ScheduledService<String> {
         return new CrawlingTask();
     }
 
-    public static void crawlAndUpdate(int amount) {
+    /**
+     * 通过钱币天堂后端api爬取最近的商品条目并更新数据库
+     * @param amount 需要爬取的商品数量
+     * @return 爬取到的最早发布的一条商品数据
+     */
+    public static ItemDTO crawlAndUpdate(int amount) {
         CrawlingData crawlingData = new CrawlingData(2636, amount, 0);
+        ItemDTO itemDTO = null;
         try {
             String result = HttpsUtil.sendGet(crawlingData);
             JQueryResult jQueryResult = HtmlUtil.parseJson(result);
-            ItemDTO itemDTO = null;
             int size = jQueryResult.getData().size();
             for(int i = 0; i < size; i++) {
                 itemDTO = jQueryResult.getItemDTO(i);
                 MainController.getInstance().updateAndInsertItem(ConvertUtil.convertToItemPO(itemDTO));
             }
-//            if (itemDTO != null) {
-//                System.out.println(itemDTO.getCreateTime());
-//            }
+
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
+        return itemDTO;
     }
 }

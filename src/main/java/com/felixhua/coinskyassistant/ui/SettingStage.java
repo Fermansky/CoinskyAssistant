@@ -1,6 +1,8 @@
 package com.felixhua.coinskyassistant.ui;
 
+import com.felixhua.coinskyassistant.App;
 import com.felixhua.coinskyassistant.controller.MainController;
+import com.felixhua.coinskyassistant.entity.ItemDTO;
 import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.service.CrawlingService;
@@ -15,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -117,8 +120,8 @@ public class SettingStage extends Stage {
             try {
                 int number = Integer.parseInt(inputText);
                 if (number >= 1 && number <= 50) {
-                    CrawlingService.crawlAndUpdate(number);
-                    displayAlert("更新成功", "成功更新近" + number + "条数据！");
+                    ItemDTO itemDTO = CrawlingService.crawlAndUpdate(number);
+                    displayAlert("更新成功", "成功拉取至" + itemDTO.getCreateTime() + "的数据。");
                 } else {
                     displayAlert("非法输入", "请输入1~50之间的数！");
                 }
@@ -255,6 +258,7 @@ public class SettingStage extends Stage {
         setScene(settingScene);
         setTitle(TITLE);
         setResizable(false);
+        getIcons().add(new Image(Objects.requireNonNull(App.class.getResource("/icon.png")).toExternalForm()));
         initStyle(StageStyle.TRANSPARENT);
     }
 }
