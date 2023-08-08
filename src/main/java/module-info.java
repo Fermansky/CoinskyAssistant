@@ -11,4 +11,5 @@ module CoinskyAssistant {
     requires com.google.gson;
     requires org.apache.httpcomponents.httpcore;
     requires org.apache.httpcomponents.httpclient;
+    requires commons.dbutils;
 }

@@ -4,9 +4,6 @@ import com.felixhua.coinskyassistant.controller.CrawlingController;
 import com.felixhua.coinskyassistant.entity.CrawlingData;
 import com.felixhua.coinskyassistant.util.HttpsUtil;
 import javafx.concurrent.Task;
-import org.apache.http.client.utils.URIBuilder;
-
-import java.net.URI;
 
 public class CrawlingTask extends Task<String> {
     @Override

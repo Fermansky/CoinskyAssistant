@@ -7,10 +7,9 @@ import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.service.CrawlingService;
 import com.felixhua.coinskyassistant.util.AlertUtil;
-import com.felixhua.coinskyassistant.util.HttpsUtil;
+import com.felixhua.coinskyassistant.util.DatabaseUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
@@ -25,9 +24,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 import static com.felixhua.coinskyassistant.util.AlertUtil.displayAlert;
@@ -139,7 +142,15 @@ public class SettingStage extends Stage {
 
         Button testButton =  new Button("测试功能");
         testButton.setOnMousePressed(event -> {
-//            controller.getCrawlingController().startTestCrawlingService();
+            FileChooser fileChooser = new FileChooser();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String timestamp = sdf.format(new Date());
+            String backupFileName = "CoinskyAssistant" + "_" + timestamp + ".sql";
+            fileChooser.setInitialFileName(backupFileName);
+            fileChooser.setTitle("设置文件保存的路径");
+            File file = fileChooser.showSaveDialog(MainController.getInstance().getSettingStage());
+            DatabaseUtil.backupDatabase(file);
+            AlertUtil.displayAlert("数据库转储成功", "数据库文件已经被成功转储至" + file.getAbsolutePath());
         });
         AnchorPane.setTopAnchor(testButton, 70.0);
         AnchorPane.setRightAnchor(testButton, 270.0);

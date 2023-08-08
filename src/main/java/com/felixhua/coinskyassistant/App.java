@@ -8,6 +8,7 @@ import com.felixhua.coinskyassistant.mapper.ItemMapper;
 import com.felixhua.coinskyassistant.ui.ContentScene;
 import com.felixhua.coinskyassistant.ui.MessagePane;
 import com.felixhua.coinskyassistant.ui.SettingStage;
+import com.felixhua.coinskyassistant.util.DatabaseUtil;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import com.felixhua.coinskyassistant.util.VoiceUtil;
 import javafx.application.Application;
@@ -75,6 +76,7 @@ public class App extends Application {
 
     @Override
     public void stop() {
+        DatabaseUtil.backupDatabase();
         sqlSession.close();
         long stopTime = System.currentTimeMillis();
         long runningTime = stopTime - launchTime;
