@@ -1,5 +1,6 @@
 package com.felixhua.coinskyassistant.controller;
 
+import com.felixhua.coinskyassistant.constants.Setting;
 import com.felixhua.coinskyassistant.entity.CrawlingData;
 import com.felixhua.coinskyassistant.entity.ItemDTO;
 import com.felixhua.coinskyassistant.entity.JQueryResult;
@@ -73,6 +74,9 @@ public class CrawlingController {
                 // 更新商品
                 mainController.getMessagePane().updateItem(ConvertUtil.convertToItemVO(itemDTO));
                 mainController.updateAndInsertItem(ConvertUtil.convertToItemPO(itemDTO));
+                if(Setting.mirai && (latestItemDTO == null || latestItemDTO.getId() != itemDTO.getId())) {
+                    BotController.sendMessage(ConvertUtil.convertToItemPO(itemDTO));
+                }
                 latestItemDTO = itemDTO;
             }
         }));

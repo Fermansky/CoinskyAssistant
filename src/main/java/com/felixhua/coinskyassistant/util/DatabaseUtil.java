@@ -1,10 +1,10 @@
 package com.felixhua.coinskyassistant.util;
 
+import com.felixhua.coinskyassistant.enums.LogLevel;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -13,25 +13,25 @@ public class DatabaseUtil {
     private static final Properties properties;
 
     static {
-        // ¼ÓÔØdb.propertiesÅäÖÃÎÄ¼ş
+        // åŠ è½½db.propertiesé…ç½®æ–‡ä»¶
         properties = new Properties();
         try {
-            URL resource = DatabaseUtil.class.getResource("/db.properties");
-            if (resource != null) {
-                properties.load(new FileInputStream(new File(resource.toURI())));
+            InputStream inputStream = DatabaseUtil.class.getResourceAsStream("/db.properties");
+            if (inputStream != null) {
+                properties.load(inputStream);
             }
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            LogUtil.log(LogLevel.WARNING, e.getMessage());
         }
     }
 
     public static void backupDatabase(File outputFile) {
-        // ´ÓÅäÖÃÎÄ¼şÖĞ»ñÈ¡Êı¾İ¿âĞÅÏ¢
+        // ä»é…ç½®æ–‡ä»¶ä¸­è·å–æ•°æ®åº“ä¿¡æ¯
         String username = properties.getProperty("username");
         String password = properties.getProperty("password");
         String dbName = properties.getProperty("dbname");
 
-        // ¹¹½¨±¸·İÃüÁî
+        // æ„å»ºå¤‡ä»½å‘½ä»¤
         String[] commands = {"mysqldump", "-u"+username, "-p"+password, dbName};
 
         try {
@@ -39,14 +39,14 @@ public class DatabaseUtil {
             pb.redirectOutput(outputFile);
             pb.start();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LogUtil.log(LogLevel.WARNING, e.getMessage());
         }
     }
 
     public static void backupDatabase() {
         String dbName = properties.getProperty("dbname");
 
-        // ¸ñÊ½»¯µ±Ç°ÈÕÆÚÊ±¼ä×÷Îª±¸·İÎÄ¼şÃû
+        // æ ¼å¼åŒ–å½“å‰æ—¥æœŸæ—¶é—´ä½œä¸ºå¤‡ä»½æ–‡ä»¶å
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String timestamp = sdf.format(new Date());
         String backupFileName = dbName + "_" + timestamp + ".sql";

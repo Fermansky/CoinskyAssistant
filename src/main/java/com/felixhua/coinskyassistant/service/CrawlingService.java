@@ -26,9 +26,9 @@ public class CrawlingService extends ScheduledService<String> {
     }
 
     /**
-     * Í¨¹ıÇ®±ÒÌìÌÃºó¶ËapiÅÀÈ¡×î½üµÄÉÌÆ·ÌõÄ¿²¢¸üĞÂÊı¾İ¿â
-     * @param amount ĞèÒªÅÀÈ¡µÄÉÌÆ·ÊıÁ¿
-     * @return ÅÀÈ¡µ½µÄ×îÔç·¢²¼µÄÒ»ÌõÉÌÆ·Êı¾İ
+     * é€šè¿‡é’±å¸å¤©å ‚åç«¯apiçˆ¬å–æœ€è¿‘çš„å•†å“æ¡ç›®å¹¶æ›´æ–°æ•°æ®åº“
+     * @param amount éœ€è¦çˆ¬å–çš„å•†å“æ•°é‡
+     * @return çˆ¬å–åˆ°çš„æœ€æ—©å‘å¸ƒçš„ä¸€æ¡å•†å“æ•°æ®
      */
     public static ItemDTO crawlAndUpdate(int amount) {
         CrawlingData crawlingData = new CrawlingData(2636, amount, 0);

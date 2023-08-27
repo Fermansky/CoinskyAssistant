@@ -12,4 +12,5 @@ module CoinskyAssistant {
     requires org.apache.httpcomponents.httpcore;
     requires org.apache.httpcomponents.httpclient;
     requires commons.dbutils;
+    requires mirai.core.api.jvm;
 }
