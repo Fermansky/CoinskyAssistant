@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import lombok.Getter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +25,7 @@ public class MessagePane extends Pane {
     /**
      * whether the program has started.
      */
+    @Getter
     private boolean ready = false;
     private final String date;
     private final MainController controller;
@@ -77,7 +79,6 @@ public class MessagePane extends Pane {
         closeButton.setCursor(Cursor.HAND);
         closeButton.setOnMousePressed(event -> {
             Platform.exit();
-//            System.exit(0);
         });
     }
     private void initSettingButton() {
@@ -173,10 +174,6 @@ public class MessagePane extends Pane {
         this.priceLabel.setOpacity(0.5);
         VoiceUtil.play(VoicePrompt.ITEM_SOLD);
         LogUtil.log("商品 " + itemVO.getName() + " 已售出。");
-    }
-
-    public boolean isReady() {
-        return ready;
     }
 
     public void updateDelayLabel(int delay) {

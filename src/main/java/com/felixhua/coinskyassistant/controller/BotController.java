@@ -1,6 +1,6 @@
 package com.felixhua.coinskyassistant.controller;
 
-import com.felixhua.coinskyassistant.constants.Setting;
+import com.felixhua.coinskyassistant.UserSetting;
 import com.felixhua.coinskyassistant.entity.ItemPO;
 import com.felixhua.coinskyassistant.enums.LogLevel;
 import com.felixhua.coinskyassistant.util.LogUtil;
@@ -10,8 +10,6 @@ import net.mamoe.mirai.auth.BotAuthorization;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.utils.BotConfiguration;
 import net.mamoe.mirai.utils.ExternalResource;
-import net.mamoe.mirai.utils.MiraiLogger;
-import net.mamoe.mirai.utils.SimpleLogger;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -41,7 +39,7 @@ public class BotController {
     }
 
     private BotController() {
-        if(Setting.mirai) {
+        if(UserSetting.mirai) {
             initBotController();
         }
     }

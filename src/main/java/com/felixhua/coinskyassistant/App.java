@@ -2,7 +2,6 @@ package com.felixhua.coinskyassistant;
 
 import com.felixhua.coinskyassistant.constants.Constant;
 import com.felixhua.coinskyassistant.controller.MainController;
-import com.felixhua.coinskyassistant.entity.VoiceAssistant;
 import com.felixhua.coinskyassistant.enums.VoicePrompt;
 import com.felixhua.coinskyassistant.mapper.ItemMapper;
 import com.felixhua.coinskyassistant.ui.ContentScene;
@@ -42,6 +41,9 @@ public class App extends Application {
         controller = MainController.getInstance();
         ContentScene scene = new ContentScene(new MessagePane(controller), primaryStage);
         SettingStage settingStage = new SettingStage(controller);
+        controller.initVoiceAssistant();
+
+        UserSetting.load();
 
         String resource = "mybatis-config.xml";
         InputStream inputStream;
@@ -56,11 +58,6 @@ public class App extends Application {
         sqlSession = sqlSessionFactory.openSession(true);
         ItemMapper mapper = sqlSession.getMapper(ItemMapper.class);
         controller.setItemMapper(mapper);
-
-        VoiceAssistant paimon = new VoiceAssistant("paimon", "派蒙");
-        paimon.setAvatar("paimon");
-        paimon.setDescription("基于VITS-PAIMON项目");
-        settingStage.addVoiceAssistant(paimon);
 
         scene.setFill(new Color(0, 0, 0, 0.5));
 
@@ -78,6 +75,7 @@ public class App extends Application {
     public void stop() {
         DatabaseUtil.backupDatabase();
         sqlSession.close();
+        UserSetting.save();
         long stopTime = System.currentTimeMillis();
         long runningTime = stopTime - launchTime;
         System.out.println("程序运行结束，耗时" + runningTime + "毫秒。");

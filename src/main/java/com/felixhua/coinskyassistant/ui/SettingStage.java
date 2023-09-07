@@ -27,6 +27,7 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.Getter;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -46,10 +47,14 @@ public class SettingStage extends Stage {
     private AnchorPane topBar;
     private AnchorPane contentPane;
     private HBox bottomBar; // presents tips
+    @Getter
     private Label bottomInfo;
     private ChoiceBox<VoiceAssistant> voiceAssistantChoiceBox;
     private ImageView voiceAssistantView;
+    @Getter
     private Slider volumeSlider;
+    private Button openLogFileButton, updateInfoButton, databaseDumpButton;
+    private TextField updateField;
 
     private void initTopBar() {
         topBar = new AnchorPane();
@@ -97,7 +102,7 @@ public class SettingStage extends Stage {
         bottomBar.getChildren().add(bottomInfo);
     }
 
-    private void initContentPane() {
+    private void initContentPaneLayout() {
         contentPane = new AnchorPane();
         contentPane.setPrefSize(500, 240);
 
@@ -106,54 +111,28 @@ public class SettingStage extends Stage {
         AnchorPane.setLeftAnchor(logLabel, 10.0);
         AnchorPane.setTopAnchor(logLabel, 10.0);
 
-        Button openLogFileButton = new Button("打开日志文件");
-        openLogFileButton.setOnMousePressed(event -> {
-            LogUtil.openLogFile();
-        });
+        openLogFileButton = new Button("打开日志文件");
         AnchorPane.setTopAnchor(openLogFileButton, 10.0);
         AnchorPane.setRightAnchor(openLogFileButton, 270.0);
 
-        TextField updateField = new TextField("30");
+        Label databaseLabel = new Label("数据库:");
+        databaseLabel.getStyleClass().add("setting-label");
+        AnchorPane.setLeftAnchor(databaseLabel, 10.0);
+        AnchorPane.setTopAnchor(databaseLabel, 40.0);
+
+        databaseDumpButton =  new Button("数据库转储");
+        AnchorPane.setTopAnchor(databaseDumpButton, 40.0);
+        AnchorPane.setRightAnchor(databaseDumpButton, 270.0);
+
+        updateField = new TextField("30");
         updateField.setMaxWidth(50);
-        AnchorPane.setTopAnchor(updateField, 40.0);
+        updateField.setTooltip(new Tooltip("从网站爬取商品数据条数，在1到50之间"));
+        AnchorPane.setTopAnchor(updateField, 70.0);
         AnchorPane.setLeftAnchor(updateField, 10.0);
-        Button updateInfoButton = new Button("更新数据库");
-        updateInfoButton.setOnMousePressed(event -> {
-            String inputText = updateField.getText();
-            try {
-                int number = Integer.parseInt(inputText);
-                if (number >= 1 && number <= 50) {
-                    ItemDTO itemDTO = CrawlingService.crawlAndUpdate(number);
-                    displayAlert("更新成功", "成功拉取至" + itemDTO.getCreateTime() + "的数据。");
-                } else {
-                    displayAlert("非法输入", "请输入1~50之间的数！");
-                }
-            } catch (NumberFormatException ex) {
-                displayAlert("非法输入", "请输入有效的整数！");
-            }
-        });
-        AnchorPane.setTopAnchor(updateInfoButton, 40.0);
+
+        updateInfoButton = new Button("更新数据库");
+        AnchorPane.setTopAnchor(updateInfoButton, 70.0);
         AnchorPane.setRightAnchor(updateInfoButton, 270.0);
-
-        Label testLabel = new Label("测试功能:");
-        testLabel.getStyleClass().add("setting-label");
-        AnchorPane.setLeftAnchor(testLabel, 10.0);
-        AnchorPane.setTopAnchor(testLabel, 70.0);
-
-        Button testButton =  new Button("测试功能");
-        testButton.setOnMousePressed(event -> {
-            FileChooser fileChooser = new FileChooser();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-            String timestamp = sdf.format(new Date());
-            String backupFileName = "CoinskyAssistant" + "_" + timestamp + ".sql";
-            fileChooser.setInitialFileName(backupFileName);
-            fileChooser.setTitle("设置文件保存的路径");
-            File file = fileChooser.showSaveDialog(MainController.getInstance().getSettingStage());
-            DatabaseUtil.backupDatabase(file);
-            AlertUtil.displayAlert("数据库转储成功", "数据库文件已经被成功转储至" + file.getAbsolutePath());
-        });
-        AnchorPane.setTopAnchor(testButton, 70.0);
-        AnchorPane.setRightAnchor(testButton, 270.0);
 
         Label soundSettingLabel = new Label("语音助手:");
         soundSettingLabel.getStyleClass().add("setting-label");
@@ -169,8 +148,6 @@ public class SettingStage extends Stage {
 
         voiceAssistantChoiceBox = new ChoiceBox<>();
         voiceAssistantChoiceBox.setMaxWidth(100);
-        voiceAssistantChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> voiceAssistantView.setImage(newValue.getAvatar()));
-        controller.voiceAssistantProperty.bind(voiceAssistantChoiceBox.valueProperty());
         AnchorPane.setLeftAnchor(voiceAssistantChoiceBox, 260.0);
         AnchorPane.setTopAnchor(voiceAssistantChoiceBox, 40.0);
 
@@ -178,6 +155,50 @@ public class SettingStage extends Stage {
         voiceAssistantView.setFitHeight(130.0);
         voiceAssistantView.setFitWidth(130.0);
         voiceAssistantView.setEffect(new InnerShadow());
+        AnchorPane.setLeftAnchor(voiceAssistantView, 350.0);
+        AnchorPane.setTopAnchor(voiceAssistantView, 40.0);
+
+        contentPane.getChildren().addAll(logLabel, soundSettingLabel, voiceAssistantChoiceBox, updateField,
+                voiceAssistantView, volumeSlider, openLogFileButton, updateInfoButton, databaseLabel, databaseDumpButton);
+    }
+
+    private void initContentPane() {
+        initContentPaneLayout();
+
+        openLogFileButton.setOnMousePressed(event -> {
+            LogUtil.openLogFile();
+        });
+        updateInfoButton.setOnMousePressed(event -> {
+            String inputText = updateField.getText();
+            try {
+                int number = Integer.parseInt(inputText);
+                if (number >= 1 && number <= 50) {
+                    ItemDTO itemDTO = CrawlingService.crawlAndUpdate(number);
+                    displayAlert("更新成功", "成功拉取至" + itemDTO.getCreateTime() + "的数据。");
+                } else {
+                    displayAlert("非法输入", "请输入1~50之间的数！");
+                }
+            } catch (NumberFormatException ex) {
+                displayAlert("非法输入", "请输入有效的整数！");
+            }
+        });
+        databaseDumpButton.setOnMousePressed(event -> {
+            FileChooser fileChooser = new FileChooser();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String timestamp = sdf.format(new Date());
+            String backupFileName = "CoinskyAssistant" + "_" + timestamp + ".sql";
+            fileChooser.setInitialFileName(backupFileName);
+            fileChooser.setTitle("设置文件保存的路径");
+            File file = fileChooser.showSaveDialog(MainController.getInstance().getSettingStage());
+            if (file != null) {
+                DatabaseUtil.backupDatabase(file);
+                AlertUtil.displayAlert("数据库转储成功", "数据库文件已经被成功转储至" + file.getAbsolutePath());
+            }
+        });
+
+        voiceAssistantChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> voiceAssistantView.setImage(newValue.getAvatar()));
+        controller.voiceAssistantProperty.bindBidirectional(voiceAssistantChoiceBox.valueProperty());
+
         voiceAssistantView.setOnMouseClicked(event -> {
             VoiceUtil.play(VoicePrompt.DAILY_GREETING);
         });
@@ -187,11 +208,6 @@ public class SettingStage extends Stage {
         voiceAssistantView.setOnMouseExited(event -> {
             bottomInfo.setText(DEFAULT_TIP);
         });
-        AnchorPane.setLeftAnchor(voiceAssistantView, 350.0);
-        AnchorPane.setTopAnchor(voiceAssistantView, 40.0);
-
-        contentPane.getChildren().addAll(logLabel, soundSettingLabel, voiceAssistantChoiceBox, updateField,
-                voiceAssistantView, volumeSlider, openLogFileButton, updateInfoButton, testLabel, testButton);
     }
 
     private void initSettingPane() {
@@ -248,14 +264,6 @@ public class SettingStage extends Stage {
         if (voiceAssistantChoiceBox.getItems().size() == 1) {
             voiceAssistantChoiceBox.setValue(voiceAssistant);
         }
-    }
-
-    public Slider getVolumeSlider() {
-        return this.volumeSlider;
-    }
-
-    public Label getBottomInfo() {
-        return bottomInfo;
     }
 
     public SettingStage(MainController controller) {

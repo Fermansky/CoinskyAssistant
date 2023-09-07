@@ -10,6 +10,8 @@ import com.felixhua.coinskyassistant.util.LogUtil;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.util.ArrayList;
+
 public class MainController {
     private static final MainController mainController = new MainController();
     public MessagePane messagePane;
@@ -17,6 +19,7 @@ public class MainController {
     public ObjectProperty<VoiceAssistant> voiceAssistantProperty = new SimpleObjectProperty<>();
     private ItemMapper itemMapper;
     private CrawlingController crawlingController;
+    private ArrayList<VoiceAssistant> voiceAssistants = new ArrayList<>();
 
     public static MainController getInstance() {
         return mainController;
@@ -65,6 +68,15 @@ public class MainController {
     public VoiceAssistant getVoiceAssistant() {
         return voiceAssistantProperty.get();
     }
+    public void setVoiceAssistant(String name) {
+        for(VoiceAssistant voiceAssistant : voiceAssistants) {
+            if(voiceAssistant.getName().equals(name)) {
+                voiceAssistantProperty.setValue(voiceAssistant);
+                return ;
+            }
+        }
+        LogUtil.log("未能找到名为" + name + "的语音资源包，将加载默认语音。");
+    }
 
     public CrawlingController getCrawlingController() {
         return crawlingController;
@@ -73,6 +85,28 @@ public class MainController {
     private void initCrawlingController() {
         this.crawlingController = CrawlingController.getInstance();
         crawlingController.setMainController(this);
+    }
+
+    public void initVoiceAssistant() {
+        VoiceAssistant paimon = new VoiceAssistant("paimon", "派蒙");
+        paimon.setAvatar("paimon");
+        paimon.setDescription("基于VITS-PAIMON项目");
+
+        VoiceAssistant nilou = new VoiceAssistant("nilou", "妮露");
+        nilou.setAvatar("nilou");
+        nilou.setDescription("https://genshinvoice.top/v2/");
+
+        VoiceAssistant yanfei = new VoiceAssistant("yanfei", "烟绯");
+        yanfei.setAvatar("yanfei");
+        yanfei.setDescription("https://genshinvoice.top/v2/");
+
+        voiceAssistants.add(paimon);
+        voiceAssistants.add(nilou);
+        voiceAssistants.add(yanfei);
+
+        settingStage.addVoiceAssistant(paimon);
+        settingStage.addVoiceAssistant(nilou);
+        settingStage.addVoiceAssistant(yanfei);
     }
 
     private MainController() {
