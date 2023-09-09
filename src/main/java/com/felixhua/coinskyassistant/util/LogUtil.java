@@ -50,5 +50,9 @@ public class LogUtil {
     public static void log(String logMessage) {
         log(LogLevel.INFO, logMessage);
     }
+
+    public static void warn(String warningMessage) {
+        log(LogLevel.WARNING, warningMessage);
+    }
 }
 

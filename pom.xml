@@ -6,7 +6,7 @@
 
     <groupId>com.felixhua</groupId>
     <artifactId>CoinskyAssistant</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.3-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>18</maven.compiler.source>

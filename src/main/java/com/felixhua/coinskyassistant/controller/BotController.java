@@ -2,7 +2,6 @@ package com.felixhua.coinskyassistant.controller;
 
 import com.felixhua.coinskyassistant.UserSetting;
 import com.felixhua.coinskyassistant.entity.ItemPO;
-import com.felixhua.coinskyassistant.enums.LogLevel;
 import com.felixhua.coinskyassistant.util.LogUtil;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
@@ -17,17 +16,23 @@ import java.net.URL;
 public class BotController {
     private static final BotController botController = new BotController();
 
+    private static long groupId = 912863175;
+
     private static Bot bot;
 
     public static void sendMessage(ItemPO itemPO) {
-        Group group = bot.getGroup(912863175);
-        group.sendMessage(itemPO.getName() + "\n?" + itemPO.getPrice() + ".00\n" + itemPO.getUrl());
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(itemPO.getImgUrl()).openConnection();
-            ExternalResource externalResource = ExternalResource.create(connection.getInputStream());
-            ExternalResource.sendAsImage(externalResource, group);
-        } catch (Exception e) {
-            LogUtil.log(LogLevel.WARNING, e.getMessage());
+        Group group = bot.getGroup(groupId);
+        if (group != null) {
+            group.sendMessage(itemPO.getName() + "\n¥" + itemPO.getPrice() + ".00\n" + itemPO.getUrl());
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(itemPO.getImgUrl()).openConnection();
+                ExternalResource externalResource = ExternalResource.create(connection.getInputStream());
+                ExternalResource.sendAsImage(externalResource, group);
+            } catch (Exception e) {
+                LogUtil.warn(e.getMessage());
+            }
+        } else {
+            LogUtil.warn("未能找到群组" + groupId);
         }
     }
 

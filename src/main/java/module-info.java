@@ -3,7 +3,6 @@ module CoinskyAssistant {
     requires java.datatransfer;
     requires java.desktop;
     requires javafx.graphics;
-    requires org.jsoup;
     requires javafx.controls;
     requires org.mybatis;
     requires javafx.media;

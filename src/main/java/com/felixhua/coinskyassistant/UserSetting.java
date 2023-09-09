@@ -24,7 +24,7 @@ public class UserSetting {
     public static boolean mirai = false;
 
     /**
-     *
+     * 记录语音助手的名字。
      */
     public static String assistant = "paimon";
 
@@ -35,16 +35,16 @@ public class UserSetting {
 
     public static void load(File file) {
         if(!file.exists()) {
-            LogUtil.log("未能找到配置文件，将使用默认配置。");
+            LogUtil.warn("未能找到配置文件，将使用默认配置。");
             return ;
         }
         try(FileInputStream input = new FileInputStream(file)) {
             properties.load(input);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.warn(e.getMessage());
         }
         if(properties.isEmpty()) {
-            LogUtil.log("配置文件加载失败，将使用默认配置。");
+            LogUtil.warn("配置文件加载失败，将使用默认配置。");
             return;
         }
         MainController.getInstance().setVoiceAssistant(properties.getProperty("assistant"));
@@ -56,7 +56,7 @@ public class UserSetting {
             refreshProperties();
             properties.store(output, "User Settings");
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.warn(e.getMessage());
         }
     }
 

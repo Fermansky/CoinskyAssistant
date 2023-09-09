@@ -39,7 +39,7 @@ public class DatabaseUtil {
             pb.redirectOutput(outputFile);
             pb.start();
         } catch (IOException e) {
-            LogUtil.log(LogLevel.WARNING, e.getMessage());
+            LogUtil.warn(e.getMessage());
         }
     }
 
