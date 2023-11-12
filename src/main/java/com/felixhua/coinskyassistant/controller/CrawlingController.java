@@ -75,9 +75,9 @@ public class CrawlingController {
                 mainController.getMessagePane().updateItem(ConvertUtil.convertToItemVO(itemDTO));
                 mainController.updateAndInsertItem(ConvertUtil.convertToItemPO(itemDTO));
                 // mirai机器人相关
-                if(UserSetting.mirai && (latestItemDTO == null || latestItemDTO.getId() != itemDTO.getId())) {
-                    BotController.sendMessage(ConvertUtil.convertToItemPO(itemDTO));
-                }
+//                if(UserSetting.mirai && (latestItemDTO == null || latestItemDTO.getId() != itemDTO.getId())) {
+//                    BotController.sendMessage(ConvertUtil.convertToItemPO(itemDTO));
+//                }
                 latestItemDTO = itemDTO;
             }
         }));

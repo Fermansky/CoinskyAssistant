@@ -13,19 +13,26 @@ import java.util.Date;
 
 public class LogUtil {
     private static BufferedWriter writer;
-    private static final File logFile;
-    private static final DateFormat dateFormat;
+    private static File logFile;
+    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static {
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
-        String logFileName = new SimpleDateFormat("yyyy-MM-dd hhmmss").format(new Date());
-        logFile = new File("./log/" + logFileName + ".log");
+        String logDirectoryPath = "./log/";
+        File logDirectory = new File(logDirectoryPath);
+        if (!logDirectory.exists()) {
+            logDirectory.mkdirs();
+        }
         try {
-            writer = new BufferedWriter(new FileWriter(logFile));
+            createLogFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void createLogFile() throws IOException {
+        String logFileName = new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date());
+        logFile = new File("./log/" + logFileName + ".log");
+        writer = new BufferedWriter(new FileWriter(logFile));
     }
 
     public static void openLogFile() {

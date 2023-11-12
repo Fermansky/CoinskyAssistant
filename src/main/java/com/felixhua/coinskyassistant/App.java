@@ -51,13 +51,12 @@ public class App extends Application {
             inputStream = Resources.getResourceAsStream(resource);
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
             inputStream.close();
-        } catch (IOException e) {
+            sqlSession = sqlSessionFactory.openSession(true);
+            ItemMapper mapper = sqlSession.getMapper(ItemMapper.class);
+            controller.setItemMapper(mapper);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        sqlSession = sqlSessionFactory.openSession(true);
-        ItemMapper mapper = sqlSession.getMapper(ItemMapper.class);
-        controller.setItemMapper(mapper);
 
         scene.setFill(new Color(0, 0, 0, 0.5));
 

@@ -10,6 +10,7 @@ module CoinskyAssistant {
     requires com.google.gson;
     requires org.apache.httpcomponents.httpcore;
     requires org.apache.httpcomponents.httpclient;
-    requires commons.dbutils;
-    requires mirai.core.api.jvm;
+
+    opens com.felixhua.coinskyassistant.entity to com.google.gson;
+    exports com.felixhua.coinskyassistant;
 }

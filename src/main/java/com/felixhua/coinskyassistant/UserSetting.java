@@ -28,7 +28,6 @@ public class UserSetting {
      */
     public static String assistant = "paimon";
 
-
     public static void load() {
         load(new File(configFilePath));
     }
